@@ -31,6 +31,7 @@ public class Ioc {
 			logger.warn("未使用bassis_hibernate,跳过相关设置");
 			return;
 		}
+		logger.debug("初始化bassis_hibernate资源...");
 		try {
 			Object objDB = BeanFactory.getClassLoaderToObject(ReferenceDeclaration.BASSIS_HIBERNATE);
 			Method method = Reflection.getMethod(objDB.getClass(), ReferenceDeclaration.BASSIS_HIBERNATE_DBIOC);

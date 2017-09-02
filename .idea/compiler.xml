@@ -19,7 +19,7 @@
       <module name="bassis_hibernate" target="1.8" />
       <module name="bassis_test" target="1.5" />
       <module name="bassis_tools" target="1.8" />
-      <module name="bassis_web" target="${jdk.version}" />
+      <module name="bassis_web" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
