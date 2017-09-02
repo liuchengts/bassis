@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="bassis_bean" />
+        <module name="bassis_hibernate" />
+        <module name="bassis_test" />
+        <module name="bassis_tools" />
+        <module name="bassis_web" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="bassis" target="1.8" />
+      <module name="bassis_bean" target="1.8" />
+      <module name="bassis_hibernate" target="1.8" />
+      <module name="bassis_test" target="1.5" />
+      <module name="bassis_tools" target="1.8" />
+      <module name="bassis_web" target="${jdk.version}" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

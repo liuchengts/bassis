@@ -11,6 +11,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<servlet-api.version>2.5</servlet-api.version>
+		<jdk.version>1.8</jdk.version>
 		<!-- <jstl.version>1.2</jstl.version> -->
 	</properties>
 	<build>

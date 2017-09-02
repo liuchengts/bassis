@@ -39,9 +39,6 @@
 							<directory>WebContent</directory>
 						</resource>
 					</webResources>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
-					<showWarnings>true</showWarnings>
 				</configuration>
 			</plugin>
 		</plugins>
