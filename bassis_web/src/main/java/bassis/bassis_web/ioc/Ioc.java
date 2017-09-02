@@ -26,7 +26,6 @@ public class Ioc {
 	 * @param obj
 	 */
 	public static void isIocDB(Object obj) {
-		// 没有使用bassis_hibernate框架
 		if (!ReflexUtils.isClass(ReferenceDeclaration.BASSIS_HIBERNATE)) {
 			logger.warn("未使用bassis_hibernate,跳过相关设置");
 			return;
