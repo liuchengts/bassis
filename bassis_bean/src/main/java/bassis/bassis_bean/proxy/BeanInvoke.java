@@ -26,7 +26,7 @@ public class BeanInvoke {
 		}
 		Object res = null;
 		try {
-			res = method.invoke(obj, method.getParameters());
+			res = method.invoke(obj, (Object[]) method.getParameters());
 			logger.debug("方法代理执行完成");
 		} catch (Exception e) {
 			// TODO: handle exception
