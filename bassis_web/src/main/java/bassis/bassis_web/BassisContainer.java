@@ -393,8 +393,6 @@ public class BassisContainer extends HttpServlet {
 	/***
 	 * 创建Resource对象
 	 * 
-	 * @param memoryAddress
-	 *            内存地址
 	 * @param servletAttribute
 	 * @param servletClient
 	 * @param servletCookie

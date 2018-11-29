@@ -223,7 +223,6 @@ public class ServletView {
 	/**
 	 * 直接输出字符串
 	 * 
-	 * @param obj
 	 */
 	public void outString(String str) throws Exception {
 		PrintWriter out = response.getWriter();

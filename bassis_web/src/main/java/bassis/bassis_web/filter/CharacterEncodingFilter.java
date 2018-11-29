@@ -14,14 +14,12 @@ public class CharacterEncodingFilter implements Filter {
 	protected FilterConfig filterConfig = null;
 
 	public void init(FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
 		this.filterConfig = filterConfig;
 		this.encoding = filterConfig.getInitParameter("encoding");
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
-		// TODO Auto-generated method stub
 		String encoding = selectEncoding(request);
 		if (encoding != null) {
 			request.setCharacterEncoding(encoding);
@@ -32,7 +30,6 @@ public class CharacterEncodingFilter implements Filter {
 		return (this.encoding);
 	}
 	public void destroy() {
-		// TODO Auto-generated method stub
 		this.encoding = null;
 		this.filterConfig = null;
 	}
