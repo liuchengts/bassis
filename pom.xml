@@ -18,13 +18,13 @@
     </properties>
 
     <modules>
+        <module>bassis-parent</module>
         <module>bassis_tools</module>
         <module>bassis_bean</module>
         <module>bassis_hibernate</module>
         <module>bassis_web</module>
         <module>bassis_test</module>
-        <module>../bassis-boot</module>
-        <module>bassis-parent</module>
+        <module>bassis-boot</module>
     </modules>
     <build>
         <resources>
