@@ -3,7 +3,7 @@ package bassis.bassis_bean;
 import java.util.Map;
 
 import bassis.bassis_bean.annotation.impl.AutowiredImpl;
-import bassis.bassis_tools.exception.CustomException;
+import org.bassis.bassis_tools.exception.CustomException;
 
 public class IocFactory {
 	private static class LazyHolder {

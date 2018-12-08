@@ -3,7 +3,7 @@ package bassis.bassis_web.assist;
 import java.util.HashMap;
 import java.util.Map;
 
-import bassis.bassis_tools.string.StringUtils;
+import org.bassis.bassis_tools.string.StringUtils;
 
 /**
  * 控制器资源管家

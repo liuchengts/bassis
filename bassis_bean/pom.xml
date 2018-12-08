@@ -7,7 +7,7 @@
 		<version>1-SNAPSHOT</version>
 	</parent>
 	<artifactId>bassis_bean</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>bassis_bean</name>
 	<description>bean工厂、ioc注入</description>
@@ -46,9 +46,9 @@
 	<dependencies>
 		<!-- 基础工具类包 -->
 		<dependency>
-			<groupId>bassis</groupId>
+			<groupId>com.bassis.parent</groupId>
 			<artifactId>bassis_tools</artifactId>
-			<version>${version}</version>
+			<version>1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 </project>

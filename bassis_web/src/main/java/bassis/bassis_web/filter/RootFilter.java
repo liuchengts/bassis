@@ -15,18 +15,19 @@ import org.apache.log4j.Logger;
 
 public class RootFilter implements Filter  {
 	private static Logger logger = Logger.getLogger(RootFilter.class);
-	public void destroy() {
-		// TODO Auto-generated method stub
+
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+
 	}
 
 	public void doFilter(ServletRequest req, ServletResponse res,
-			FilterChain chain) throws IOException, ServletException {
+						 FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest request = (HttpServletRequest) req;
 		HttpServletResponse response = (HttpServletResponse) res;
 		String url = request.getRequestURI();
-		if(!"/status.check".equals(url)){
-			logger.debug("访问到了"+url);
-		}
+			logger.info("访问到了"+url);
+		chain.doFilter(request, response);
 //		if(StringUtils.contains(request.getServerName(), property.getProperty("wxhost")) ||  StringUtils.contains(request.getServerName(), property.getProperty("hthost"))|| StringUtils.contains(request.getServerName(), property.getProperty("host"))){//无线
 //			if(url != null && !url.equals("") && !url.equals("/")){
 //				chain.doFilter(request, response);
@@ -49,8 +50,9 @@ public class RootFilter implements Filter  {
 //		}
 	}
 
-	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub
-		
+	@Override
+	public void destroy() {
+
 	}
+
 }

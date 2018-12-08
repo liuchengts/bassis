@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import bassis.bassis_bean.ReferenceDeclaration;
-import bassis.bassis_tools.string.StringUtils;
+import org.bassis.bassis_tools.string.StringUtils;
 
 /**
  * 资源操作

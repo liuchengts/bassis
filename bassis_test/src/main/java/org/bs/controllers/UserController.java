@@ -7,7 +7,7 @@ import bassis.bassis_bean.annotation.Aop;
 import bassis.bassis_bean.annotation.Autowired;
 import bassis.bassis_hibernate.annotation.Data;
 import bassis.bassis_hibernate.tool.Dao;
-import bassis.bassis_tools.json.GsonUtils;
+import org.bassis.bassis_tools.json.GsonUtils;
 import bassis.bassis_web.annotation.Controller;
 import bassis.bassis_web.annotation.RequestMapping;
 import bassis.bassis_web.assist.Resource;

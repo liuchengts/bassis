@@ -1,37 +1,37 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://java.sun.com/xml/ns/javaee"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	id="WebApp_ID" version="2.5">
-	<display-name>启动bassis_web框架</display-name>
-<!-- 	<servlet> -->
-<!-- 		<servlet-name>container</servlet-name> -->
-<!-- 		<servlet-class>bassis.bassis_web.BassisContainer</servlet-class> -->
-<!-- 		<init-param> -->
-<!-- 			<param-name>contextConfigLocation</param-name> -->
-<!-- 			<param-value>/bassis.properties</param-value> -->
-<!-- 		</init-param> -->
-<!-- 		<load-on-startup>1</load-on-startup> -->
-<!-- 	</servlet> -->
-	<servlet-mapping>
-		<servlet-name>container</servlet-name>
-		<url-pattern>*.json</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>container</servlet-name>
-		<url-pattern>*.htm</url-pattern>
-	</servlet-mapping>
-	<!--配置请求的编码 -->
-	<filter>
-		<filter-name>CharacterEncodingFilte</filter-name>
-		<filter-class>bassis.bassis_web.filter.CharacterEncodingFilter</filter-class>
-		<init-param>
-			<param-name>encoding</param-name>
-			<param-value>UTF-8</param-value>
-		</init-param>
-	</filter>
-	<filter-mapping>
-		<filter-name>CharacterEncodingFilte</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-</web-app>
+<!--<?xml version="1.0" encoding="UTF-8"?>-->
+<!--<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
+	<!--xmlns="http://java.sun.com/xml/ns/javaee"-->
+	<!--xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"-->
+	<!--id="WebApp_ID" version="2.5">-->
+	<!--<display-name>启动bassis_web框架</display-name>-->
+<!--&lt;!&ndash; 	<servlet> &ndash;&gt;-->
+<!--&lt;!&ndash; 		<servlet-name>container</servlet-name> &ndash;&gt;-->
+<!--&lt;!&ndash; 		<servlet-class>bassis.bassis_web.BassisContainer</servlet-class> &ndash;&gt;-->
+<!--&lt;!&ndash; 		<init-param> &ndash;&gt;-->
+<!--&lt;!&ndash; 			<param-name>contextConfigLocation</param-name> &ndash;&gt;-->
+<!--&lt;!&ndash; 			<param-value>/bassis.properties</param-value> &ndash;&gt;-->
+<!--&lt;!&ndash; 		</init-param> &ndash;&gt;-->
+<!--&lt;!&ndash; 		<load-on-startup>1</load-on-startup> &ndash;&gt;-->
+<!--&lt;!&ndash; 	</servlet> &ndash;&gt;-->
+	<!--<servlet-mapping>-->
+		<!--<servlet-name>container</servlet-name>-->
+		<!--<url-pattern>*.json</url-pattern>-->
+	<!--</servlet-mapping>-->
+	<!--<servlet-mapping>-->
+		<!--<servlet-name>container</servlet-name>-->
+		<!--<url-pattern>*.htm</url-pattern>-->
+	<!--</servlet-mapping>-->
+	<!--&lt;!&ndash;配置请求的编码 &ndash;&gt;-->
+	<!--<filter>-->
+		<!--<filter-name>CharacterEncodingFilte</filter-name>-->
+		<!--<filter-class>bassis.bassis_web.filter.CharacterEncodingFilter</filter-class>-->
+		<!--<init-param>-->
+			<!--<param-name>encoding</param-name>-->
+			<!--<param-value>UTF-8</param-value>-->
+		<!--</init-param>-->
+	<!--</filter>-->
+	<!--<filter-mapping>-->
+		<!--<filter-name>CharacterEncodingFilte</filter-name>-->
+		<!--<url-pattern>/*</url-pattern>-->
+	<!--</filter-mapping>-->
+<!--</web-app>-->

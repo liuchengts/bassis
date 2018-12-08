@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import bassis.bassis_hibernate.annotation.Data;
 import bassis.bassis_hibernate.connection.DaoImpl;
-import bassis.bassis_tools.gc.GcUtils;
-import bassis.bassis_tools.string.StringUtils;
+import org.bassis.bassis_tools.gc.GcUtils;
+import org.bassis.bassis_tools.string.StringUtils;
 
 public class DataImpl {
 	private static Logger logger = Logger.getLogger(DataImpl.class);

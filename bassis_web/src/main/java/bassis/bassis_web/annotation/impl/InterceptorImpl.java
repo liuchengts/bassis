@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import org.apache.log4j.Logger;
 
 import bassis.bassis_bean.BeanFactory;
-import bassis.bassis_tools.exception.CustomException;
+import org.bassis.bassis_tools.exception.CustomException;
 import bassis.bassis_web.annotation.Interceptor;
 import bassis.bassis_web.assist.Resource;
 

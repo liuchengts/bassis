@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import bassis.bassis_bean.ReferenceDeclaration;
 import bassis.bassis_bean.annotation.impl.ComponentImpl;
-import bassis.bassis_tools.string.StringUtils;
+import org.bassis.bassis_tools.string.StringUtils;
 
 public class ScanConfig {
 	private static Logger logger = Logger.getLogger(ScanTask.class);

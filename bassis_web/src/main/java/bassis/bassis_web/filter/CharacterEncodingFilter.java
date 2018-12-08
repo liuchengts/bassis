@@ -1,4 +1,4 @@
-package  bassis.bassis_web.filter;
+package bassis.bassis_web.filter;
 
 import java.io.IOException;
 
@@ -10,28 +10,29 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 public class CharacterEncodingFilter implements Filter {
-	protected String encoding = null;
-	protected FilterConfig filterConfig = null;
+    protected String encoding = "UTF-8";
+    protected FilterConfig filterConfig = null;
 
-	public void init(FilterConfig filterConfig) throws ServletException {
-		this.filterConfig = filterConfig;
-		this.encoding = filterConfig.getInitParameter("encoding");
-	}
+    public void init(FilterConfig filterConfig) throws ServletException {
+        this.filterConfig = filterConfig;
+    }
 
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
-		String encoding = selectEncoding(request);
-		if (encoding != null) {
-			request.setCharacterEncoding(encoding);
-		}
-		chain.doFilter(request, response);
-	}
-	protected String selectEncoding(ServletRequest request) {
-		return (this.encoding);
-	}
-	public void destroy() {
-		this.encoding = null;
-		this.filterConfig = null;
-	}
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
+        String encoding = selectEncoding(request);
+        if (encoding != null) {
+            request.setCharacterEncoding(encoding);
+        }
+        chain.doFilter(request, response);
+    }
+
+    protected String selectEncoding(ServletRequest request) {
+        return (this.encoding);
+    }
+
+    public void destroy() {
+        this.encoding = null;
+        this.filterConfig = null;
+    }
 
 }

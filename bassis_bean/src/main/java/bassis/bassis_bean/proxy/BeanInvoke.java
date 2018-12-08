@@ -4,9 +4,8 @@ import java.lang.reflect.Method;
 
 import org.apache.log4j.Logger;
 
-import bassis.bassis_bean.BeanFactory;
 import bassis.bassis_bean.annotation.impl.AopImpl;
-import bassis.bassis_tools.exception.CustomException;
+import org.bassis.bassis_tools.exception.CustomException;
 
 public class BeanInvoke {
 	private static Logger logger = Logger.getLogger(BeanInvoke.class);

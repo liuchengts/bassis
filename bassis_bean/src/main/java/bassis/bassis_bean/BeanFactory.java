@@ -6,8 +6,8 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import bassis.bassis_bean.scan.ScanConfig;
-import bassis.bassis_tools.properties.ReadProperties;
-import bassis.bassis_tools.reflex.ReflexUtils;
+import org.bassis.bassis_tools.properties.FileProperties;
+import org.bassis.bassis_tools.reflex.ReflexUtils;
 public class BeanFactory {
 	private static Logger logger = Logger.getLogger(BeanFactory.class);
 	
@@ -27,12 +27,12 @@ public class BeanFactory {
 	//bean实例
 	static Map<String, Object> mapStringObjs = new HashMap<String, Object>();
 	private static ClassLoader classLoader = null;
-	static ReadProperties properties;
+	static FileProperties properties;
 	/**
 	 * 获得读取器
 	 * @return
 	 */
-	public static ReadProperties getProperties() {
+	public static FileProperties getProperties() {
 		return properties;
 	}
 	/**
@@ -91,7 +91,7 @@ public class BeanFactory {
 	static {
 		classLoader = ReflexUtils.getClassLoader();
 		// 初始化properties文件读取器
-		properties = ReadProperties.getInit();
+		properties = FileProperties.getInit();
 		//加载bean默认配置
 		properties.read(ReferenceDeclaration.BEAN_PROPERTIES);
 	}

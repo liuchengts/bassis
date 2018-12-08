@@ -7,10 +7,10 @@ import org.apache.log4j.Logger;
 
 import bassis.bassis_bean.BeanFactory;
 import bassis.bassis_bean.annotation.Autowired;
-import bassis.bassis_tools.exception.CustomException;
-import bassis.bassis_tools.gc.GcUtils;
-import bassis.bassis_tools.reflex.ReflexUtils;
-import bassis.bassis_tools.string.StringUtils;
+import org.bassis.bassis_tools.exception.CustomException;
+import org.bassis.bassis_tools.gc.GcUtils;
+import org.bassis.bassis_tools.reflex.ReflexUtils;
+import org.bassis.bassis_tools.string.StringUtils;
 
 public class AutowiredImpl {
 	private static Logger logger = Logger.getLogger(AutowiredImpl.class);

@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 import bassis.bassis_bean.BeanFactory;
 import bassis.bassis_bean.annotation.Component;
 import bassis.bassis_bean.scan.ScanTask;
-import bassis.bassis_tools.exception.CustomException;
-import bassis.bassis_tools.string.StringUtils;
+import org.bassis.bassis_tools.exception.CustomException;
+import org.bassis.bassis_tools.string.StringUtils;
 
 /**
  * 处理 Component.class注解
