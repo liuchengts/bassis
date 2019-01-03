@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import bassis.bassis_bean.scan.ScanTask;
-import org.bassis.bassis_tools.string.StringUtils;
+import org.bassis.tools.string.StringUtils;
 import bassis.bassis_web.annotation.Controller;
 import bassis.bassis_web.annotation.RequestMapping;
 

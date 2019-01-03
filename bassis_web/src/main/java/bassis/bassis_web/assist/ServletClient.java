@@ -7,7 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.bassis.bassis_tools.string.StringUtils;
+import org.bassis.tools.string.StringUtils;
 
 public class ServletClient {
     private Map<String, String> headers = new HashMap<String, String>();

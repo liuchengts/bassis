@@ -9,11 +9,11 @@ import org.apache.log4j.Logger;
 import bassis.bassis_bean.BeanFactory;
 import bassis.bassis_bean.ReferenceDeclaration;
 import bassis.bassis_bean.annotation.Autowired;
-import org.bassis.bassis_tools.exception.CustomException;
-import org.bassis.bassis_tools.gc.GcUtils;
-import org.bassis.bassis_tools.reflex.Reflection;
-import org.bassis.bassis_tools.reflex.ReflexUtils;
-import org.bassis.bassis_tools.string.StringUtils;
+import org.bassis.tools.exception.CustomException;
+import org.bassis.tools.gc.GcUtils;
+import org.bassis.tools.reflex.Reflection;
+import org.bassis.tools.reflex.ReflexUtils;
+import org.bassis.tools.string.StringUtils;
 import bassis.bassis_web.assist.Resource;
 import bassis.bassis_web.assist.StewardResource;
 

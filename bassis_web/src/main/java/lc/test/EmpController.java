@@ -1,7 +1,7 @@
 package lc.test;
 
 import bassis.bassis_bean.annotation.Autowired;
-import org.bassis.bassis_tools.json.GsonUtils;
+import org.bassis.tools.json.GsonUtils;
 import bassis.bassis_web.annotation.Controller;
 import bassis.bassis_web.annotation.RequestMapping;
 import org.apache.log4j.Logger;

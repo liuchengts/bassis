@@ -9,8 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="bassis_bean" />
-    <orderEntry type="library" name="Maven: bassis:bassis_tools:0.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: bassis:bassis_bean:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="module" module-name="bassis_hibernate" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-core:5.2.10.Final" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.3.0.Final" level="project" />
@@ -26,6 +25,7 @@
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-c3p0:5.2.10.Final" level="project" />
     <orderEntry type="library" name="Maven: com.mchange:c3p0:0.9.5.2" level="project" />
     <orderEntry type="library" name="Maven: com.mchange:mchange-commons-java:0.2.11" level="project" />
+    <orderEntry type="library" name="Maven: bassis:bassis_tools:0.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:3.0-alpha-1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:8.5.35" level="project" />
     <orderEntry type="library" name="Maven: org.apache.tomcat:tomcat-annotations-api:8.5.35" level="project" />
