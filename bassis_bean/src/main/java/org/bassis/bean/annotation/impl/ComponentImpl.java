@@ -3,6 +3,7 @@ package org.bassis.bean.annotation.impl;
 import org.apache.log4j.Logger;
 import org.bassis.bean.Scanner;
 import org.bassis.bean.annotation.Component;
+import org.bassis.bean.proxy.ProxyFactory;
 import org.bassis.tools.exception.CustomException;
 import org.bassis.tools.string.StringUtils;
 
@@ -36,7 +37,7 @@ public class ComponentImpl {
     /**
      * bean存储器， name:class
      */
-    static Map<String, Class> beansClass;
+    static Map<String, Object> beansObject;
     /**
      * bean别名存储器， 原始名称:别名
      */
@@ -52,16 +53,16 @@ public class ComponentImpl {
      * @param name bean别名
      * @return 返回class
      */
-    public static Class getBeansClass(String name) {
+    public static Object getBeansClass(String name) {
         String key = "";
-        if (!beansClass.containsKey(name)) {
+        if (!beansObject.containsKey(name)) {
             if (aliasBeanName.containsKey(name)) {
                 key = aliasBeanName.get(name);
             }
         } else {
             key = name;
         }
-        return beansClass.get(key);
+        return beansObject.get(key);
     }
 
     /**
@@ -70,12 +71,12 @@ public class ComponentImpl {
      * @param clz bean的class
      * @return 返回class
      */
-    public static Class getBeansClass(Class clz) {
+    public static Object getBeansClass(Class clz) {
         String key = clz.getName();
-        if (!beansClass.containsKey(key)) {
+        if (!beansObject.containsKey(key)) {
             return null;
         }
-        return beansClass.get(key);
+        return beansObject.get(key);
     }
 
     /**
@@ -97,7 +98,7 @@ public class ComponentImpl {
      */
     static {
         logger.debug("@Component分析开始");
-        beansClass = new HashMap<>();
+        beansObject = new HashMap<>();
         aliasBeanName = new HashMap<>();
         beanMethods = new HashMap<>();
         for (Class<?> clz : scanPackageList) {
@@ -121,7 +122,9 @@ public class ComponentImpl {
         String aliasName = annotation.name();
         //原始名称
         String name = clz.getName();
-        if (beansClass.containsKey(name)) {
+        Object object = ProxyFactory.invoke(clz);
+        //TODO 这里考虑加入注入器
+        if (beansObject.containsKey(name)) {
             CustomException.throwOut(" @Component bean [" + name + "] repeat:" + name);
         }
         if (!StringUtils.isEmptyString(aliasName)) {
@@ -132,7 +135,7 @@ public class ComponentImpl {
         }
         Set<Method> setMethod = new HashSet<>();
         Collections.addAll(setMethod, clz.getDeclaredMethods());
-        beansClass.put(name, clz);
+        beansObject.put(name, object);
         beanMethods.put(name, setMethod);
 
     }
