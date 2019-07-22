@@ -16,10 +16,6 @@
     <name>bassis-boot</name>
     <description>boot</description>
 
-    <properties>
-        <servlet-api.version>4.0.0</servlet-api.version>
-        <tomcat.version>8.5.35</tomcat.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -43,8 +39,8 @@
         </dependency>
         <dependency>
             <groupId>com.bassis.parent</groupId>
-            <artifactId>bassis_bean</artifactId>
-            <version>1-SNAPSHOT</version>
+            <artifactId>bassis-bean</artifactId>
+            <version>${bassis-bean.version}</version>
         </dependency>
     </dependencies>
 </project>
