@@ -1,7 +1,7 @@
-package bassis_test;
-
-import org.bs.model.User;
-
-public interface UserService {
-	public User find();
-}
+//package bassis_test;
+//
+//import org.bs.model.User;
+//
+//public interface UserService {
+//	public User find();
+//}

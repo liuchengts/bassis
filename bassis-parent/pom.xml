@@ -28,6 +28,7 @@
         <bassis-web.version>1-SNAPSHOT</bassis-web.version>
         <bassis-boot.version>1-SNAPSHOT</bassis-boot.version>
     </properties>
+
     <distributionManagement>
         <repository>
             <id>releases</id>

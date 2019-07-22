@@ -1,6 +1,6 @@
 package org.bs;
 
-import com.bassis.web.BassisApplication;
+import com.bassis.boot.application.BassisApplication;
 
 public class Application {
     public static void main(String[] args) throws Exception {
