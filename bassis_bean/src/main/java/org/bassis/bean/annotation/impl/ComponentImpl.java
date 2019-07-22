@@ -1,12 +1,16 @@
 package org.bassis.bean.annotation.impl;
 
 import org.apache.log4j.Logger;
+import org.bassis.bean.BeanFactory;
 import org.bassis.bean.Scanner;
+import org.bassis.bean.annotation.Autowired;
 import org.bassis.bean.annotation.Component;
 import org.bassis.bean.proxy.ProxyFactory;
 import org.bassis.tools.exception.CustomException;
+import org.bassis.tools.reflex.ReflexUtils;
 import org.bassis.tools.string.StringUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -32,20 +36,20 @@ public class ComponentImpl {
     /**
      * 扫描到的class
      */
-    static Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
+    private static Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
 
     /**
      * bean存储器， name:class
      */
-    static Map<String, Object> beansObject;
+    private static Map<String, Object> beansObject;
     /**
      * bean别名存储器， 原始名称:别名
      */
-    static Map<String, String> aliasBeanName;
+    private static Map<String, String> aliasBeanName;
     /**
      * bean中的方法存储器， beanName:Methods
      */
-    static Map<String, Set<Method>> beanMethods;
+    private static Map<String, Set<Method>> beanMethods;
 
     /**
      * 根据bean名称获得bean
@@ -86,7 +90,24 @@ public class ComponentImpl {
      * @return 当前的所有方法
      */
     public static Set<Method> getBeanMethods(Class clz) {
-        String key = clz.getName();
+        return getBeanMethods(clz.getName());
+    }
+
+    /**
+     * 根据bean的class获得当前的方法
+     *
+     * @param name bean的name
+     * @return 当前的所有方法
+     */
+    public static Set<Method> getBeanMethods(String name) {
+        String key = "";
+        if (!beansObject.containsKey(name)) {
+            if (aliasBeanName.containsKey(name)) {
+                key = aliasBeanName.get(name);
+            }
+        } else {
+            key = name;
+        }
         if (!beanMethods.containsKey(key)) {
             return null;
         }
@@ -108,6 +129,19 @@ public class ComponentImpl {
                 CustomException.throwOut("@Component分析异常：", e);
             }
         }
+        autowired();
+    }
+
+    /**
+     * 处理 autowired 注解
+     */
+    private static void autowired() {
+        beansObject.entrySet().forEach(m -> {
+            Object obj = m.getValue();
+            AutowiredImpl.analyseFields(obj);
+            //更新存储对象
+            beansObject.put(m.getKey(), obj);
+        });
     }
 
     /**
@@ -122,8 +156,6 @@ public class ComponentImpl {
         String aliasName = annotation.name();
         //原始名称
         String name = clz.getName();
-        Object object = ProxyFactory.invoke(clz);
-        //TODO 这里考虑加入注入器
         if (beansObject.containsKey(name)) {
             CustomException.throwOut(" @Component bean [" + name + "] repeat:" + name);
         }
@@ -133,10 +165,12 @@ public class ComponentImpl {
             }
             aliasBeanName.put(aliasName, clz.getName());
         }
+        Object object = ProxyFactory.invoke(clz);
         Set<Method> setMethod = new HashSet<>();
         Collections.addAll(setMethod, clz.getDeclaredMethods());
         beansObject.put(name, object);
         beanMethods.put(name, setMethod);
 
     }
+
 }

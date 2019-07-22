@@ -10,5 +10,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface Autowired {
 	String value()  default "";
 	String verify() default "";
-	Class<?> clas() default Object.class;
+	Class<?> aclass() default Object.class;
 }
