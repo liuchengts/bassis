@@ -29,7 +29,7 @@ public class Reflection {
 	 */
 	public static Object invoke(String method_name, Class<?> las) throws Exception {
 		Method method = getMethod(las, method_name);
-		return method.invoke(las.newInstance(), method.getParameters());
+		return method.invoke(las.newInstance(), (Object[]) method.getParameters());
 	}
 	/**
 	 * 进行代理执行
@@ -41,7 +41,7 @@ public class Reflection {
 	public static Object invokeMethod(Object obj, Method method) throws Exception {
 		Object res = null;
 		try {
-			res = method.invoke(obj, method.getParameters());
+			res = method.invoke(obj, (Object[]) method.getParameters());
 		} catch (Exception e) {
 			// TODO: handle exception
 			res = CustomException.parsing(e.getMessage(), e, res);

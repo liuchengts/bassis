@@ -34,7 +34,7 @@ public class Concurrent {
 							cdOrder.await(); // 处于等待状态
 							try {
 								long t1 = System.currentTimeMillis();
-								method.invoke(obj, method.getParameters());
+								method.invoke(obj, (Object[]) method.getParameters());
 								logger.info("执行时间>>>>>>" + (System.currentTimeMillis() - t1));
 							} catch (Exception e) {
 								// XXX: handle exception

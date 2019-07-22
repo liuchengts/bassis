@@ -8,7 +8,6 @@
     <artifactId>bassis</artifactId>
     <version>1-SNAPSHOT</version>
     <packaging>pom</packaging>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.vesion>1.8</java.vesion>
