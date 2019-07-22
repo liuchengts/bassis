@@ -11,7 +11,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bassis-boot</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>bassis-boot</name>
     <description>boot</description>
@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>com.bassis.parent</groupId>
-            <artifactId>bassis_tools</artifactId>
+            <artifactId>bassis_bean</artifactId>
             <version>1-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -11,39 +11,20 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <kotlin.version>1.2.71</kotlin.version>
-        <lombok.version>1.16.18</lombok.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.plugin.version>3.6.1</maven.compiler.plugin.version>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>${lombok.version}</version>
-        </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.jetbrains.kotlin</groupId>-->
-            <!--<artifactId>kotlin-stdlib</artifactId>-->
-            <!--<version>${kotlin.version}</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.jetbrains.kotlin</groupId>-->
-            <!--<artifactId>kotlin-reflect</artifactId>-->
-            <!--<version>${kotlin.version}</version>-->
-        <!--</dependency>-->
-    </dependencies>
     <distributionManagement>
         <repository>
             <id>releases</id>
             <name>Nexus Release Repository</name>
-            <url>http://nexus.decennium-tech.com/nexus/content/repositories/releases/</url>
+            <url>http://maven.ayouran.com/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
             <id>snapshots</id>
             <name>Nexus Snapshot Repository</name>
-            <url>http://nexus.decennium-tech.com/nexus/content/repositories/snapshots/</url>
+            <url>http://maven.ayouran.com/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
     <build>
