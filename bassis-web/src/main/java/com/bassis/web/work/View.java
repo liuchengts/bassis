@@ -1,10 +1,12 @@
 package com.bassis.web.work;
 
+import java.io.Serializable;
+
 /**
  * 提供View的设置
  *
  */
-public class View {
+public class View implements Serializable{
 	private String sendUrl;// 发送地址
 	private boolean sendType;// false 表示转发 true表示重定向
 	private Object rlt;// 数据

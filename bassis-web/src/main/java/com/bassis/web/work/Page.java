@@ -1,10 +1,11 @@
 package com.bassis.web.work;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
-public class Page<T> {
+public class Page<T> implements Serializable {
 	@Expose
 	private  int total;//总行数
 	@Expose

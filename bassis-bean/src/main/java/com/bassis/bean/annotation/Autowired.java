@@ -8,7 +8,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Autowired {
-	String value()  default "";
-	String verify() default "";
-	Class<?> aclass() default Object.class;
+    String value() default "";
+
+    String verify() default "";
+
+    Class<?> aclass() default Object.class;
 }

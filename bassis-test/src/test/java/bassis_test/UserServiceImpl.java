@@ -2,7 +2,7 @@
 //
 //import org.bs.model.User;
 //
-//import bassis.bassis_bean.annotation.Aop;
+//import bassis.bassis_bean.annotation.AopService;
 //
 //public class UserServiceImpl implements UserService {
 //

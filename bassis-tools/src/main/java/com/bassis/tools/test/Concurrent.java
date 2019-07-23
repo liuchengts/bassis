@@ -27,7 +27,7 @@ public class Concurrent {
     public static void testMethod(int count, Class<?> las, String method_name, Class<?>... parameterTypes) {
         long t = System.currentTimeMillis();
         try {
-            final Method method = Reflection.getMethod(las, method_name, parameterTypes);
+            final Method method = Reflection.getMethod(false,las, method_name, parameterTypes);
             final Object obj = las.newInstance();
             final CountDownLatch cdOrder = new CountDownLatch(1);//将军
             final CountDownLatch cdAnswer = new CountDownLatch(count);//小兵 10000

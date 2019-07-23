@@ -3,7 +3,7 @@
 //import org.apache.log4j.Logger;
 //import org.bs.model.User;
 //
-//import bassis.bassis_bean.annotation.Aop;
+//import bassis.bassis_bean.annotation.AopService;
 //import bassis.bassis_bean.annotation.Autowired;
 //import bassis.bassis_hibernate.annotation.Data;
 //import bassis.bassis_hibernate.tool.Dao;
@@ -54,7 +54,7 @@
 //	}
 //
 //	@RequestMapping("/res")
-//	@Aop("aop.UserAop")
+//	@AopService("aop.UserAop")
 //	public String login2() {
 //		if (null == user) {
 //			user = new User();

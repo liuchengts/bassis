@@ -1,11 +1,13 @@
 package com.bassis.web.work;
 
+import java.io.Serializable;
+
 /**
  * 对外输出的数据模型
  * @author ytx
  *
  */
-public class ResultBean {
+public class ResultBean implements Serializable {
 	private boolean status;// 成功或失败
 	private String code;// 返回编码
 	private String msg;// 消息

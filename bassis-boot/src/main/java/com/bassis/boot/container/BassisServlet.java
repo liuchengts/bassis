@@ -48,9 +48,8 @@ public class BassisServlet extends HttpServlet {
                     + " ] not allowed");
             return;
         }
-        Scanner.startScan(scanRoot);
         // 启动 beanFactory
-        beanFactory = BeanFactory.getInstance();
+        beanFactory = BeanFactory.startBeanFactory(scanRoot);
     }
 
     protected void service(HttpServletRequest request, HttpServletResponse response)

@@ -37,7 +37,7 @@ public class ComponentImpl {
     /**
      * bean存储器， name:class
      */
-    private static Map<String, Object> beansObject;
+    private static Map<String, Class> beansObject;
     /**
      * bean别名存储器， 原始名称:别名
      */
@@ -62,7 +62,6 @@ public class ComponentImpl {
                 CustomException.throwOut("@Component分析异常：", e);
             }
         }
-        autowired();
     }
 
 
@@ -72,7 +71,7 @@ public class ComponentImpl {
      * @param name bean别名
      * @return 返回class
      */
-    public static Object getBeansClass(String name) {
+    public static Class getBeansClass(String name) {
         String key = "";
         if (!beansObject.containsKey(name)) {
             if (aliasBeanName.containsKey(name)) {
@@ -90,7 +89,7 @@ public class ComponentImpl {
      * @param clz bean的class
      * @return 返回class
      */
-    public static Object getBeansClass(Class clz) {
+    public static Class getBeansClass(Class clz) {
         String key = clz.getName();
         if (!beansObject.containsKey(key)) {
             return null;
@@ -151,23 +150,9 @@ public class ComponentImpl {
             }
             aliasBeanName.put(aliasName, clz.getName());
         }
-        Object object = ProxyFactory.invoke(clz);
         Set<Method> setMethod = new HashSet<>();
         Collections.addAll(setMethod, clz.getDeclaredMethods());
-        beansObject.put(name, object);
+        beansObject.put(name, clz);
         beanMethods.put(name, setMethod);
     }
-
-    /**
-     * 处理当前 beansObject 集的 autowired 注解
-     */
-    private static void autowired() {
-        beansObject.entrySet().forEach(m -> {
-            Object obj = m.getValue();
-            AutowiredImpl.analyseFields(obj);
-            //更新存储对象
-            beansObject.put(m.getKey(), obj);
-        });
-    }
-
 }

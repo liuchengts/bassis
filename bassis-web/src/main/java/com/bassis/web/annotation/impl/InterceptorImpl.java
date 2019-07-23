@@ -4,15 +4,11 @@
 //
 //import org.apache.log4j.Logger;
 //
-//import bassis.bassis_bean.BeanFactory;
 //import com.bassis.tools.exception.CustomException;
 //import com.bassis.web.annotation.Interceptor;
-//import com.bassis.web.assist.Resource;
 //
 ///**
 // * 拦截器针对一个类进行拦截 aop是针对一个方法进行拦截
-// *
-// * @author ytx
 // *
 // */
 //public class InterceptorImpl {

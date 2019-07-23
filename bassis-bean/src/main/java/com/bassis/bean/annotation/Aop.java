@@ -8,5 +8,9 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Aop {
-	String value();
+    String value() default "";
+
+    Class<?> aclass() default Object.class;
+
+    String[] parameters() default "";
 }
