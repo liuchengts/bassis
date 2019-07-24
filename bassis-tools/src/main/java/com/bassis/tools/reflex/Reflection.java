@@ -1,5 +1,6 @@
 package com.bassis.tools.reflex;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.bassis.tools.exception.CustomException;
@@ -8,7 +9,7 @@ import com.bassis.tools.exception.CustomException;
  * 代理执行
  */
 public class Reflection {
-    static String error_str = Reflection.class.getName() + "代理异常";
+    static String error_str = Reflection.class.getName() + " 代理异常";
 
     /**
      * 获得class下的某个方法
@@ -97,6 +98,7 @@ public class Reflection {
         try {
             assert obj != null;
             assert method != null;
+            method.setAccessible(true);
             return method.invoke(obj, args);
         } catch (Exception e) {
             CustomException.throwOut(error_str, e);

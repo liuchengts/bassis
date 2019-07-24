@@ -21,6 +21,7 @@ public class AutowiredImpl {
      * 全局字段注解分析
      *
      * @param object 当前类
+     * @param superClass 是否从父类获取字段
      */
     public static void analyseFields(Object object, boolean superClass) {
         Field[] fields;
