@@ -154,12 +154,5 @@ public class ComponentImpl {
         Collections.addAll(setMethod, clz.getDeclaredMethods());
         beansObject.put(name, clz);
         beanMethods.put(name, setMethod);
-        setMethod.forEach(m -> {
-            if (name.contains("TestAopServiceImpl")) {
-                System.out.println(m.getName());
-                System.out.println(m.getParameterCount());
-                System.out.println(m.getParameterTypes());
-            }
-        });
     }
 }
