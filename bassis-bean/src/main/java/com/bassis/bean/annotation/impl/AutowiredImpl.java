@@ -1,6 +1,8 @@
 package com.bassis.bean.annotation.impl;
 
+import com.bassis.bean.BeanFactory;
 import com.bassis.bean.annotation.Autowired;
+import com.bassis.bean.common.Bean;
 import com.bassis.bean.proxy.ProxyFactory;
 import org.apache.log4j.Logger;
 import com.bassis.tools.exception.CustomException;
@@ -16,11 +18,12 @@ import java.lang.reflect.Field;
  */
 public class AutowiredImpl {
     private static Logger logger = Logger.getLogger(AutowiredImpl.class);
+    private static BeanFactory beanFactory = BeanFactory.getInstance();
 
     /**
      * 全局字段注解分析
      *
-     * @param object 当前类
+     * @param object     当前类
      * @param superClass 是否从父类获取字段
      */
     public static void analyseFields(Object object, boolean superClass) {
@@ -77,7 +80,11 @@ public class AutowiredImpl {
             }
             Object fieldObject = null;
             if (null != fieldClass) {
-                fieldObject = ProxyFactory.invoke(fieldClass);
+                Bean bean = beanFactory.newAutowiredBean(obj.getClass(), fieldClass);
+                if (null == bean) {
+                    CustomException.throwOut(position + " @Autowired not resource bean");
+                }
+                fieldObject = bean.getObject();
             }
             if (null == fieldObject) {
                 CustomException.throwOut(position + " @Autowired not resource object");
