@@ -25,11 +25,11 @@ import com.bassis.tools.string.StringUtils;
  */
 public class BassisServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    private static Logger logger = Logger.getLogger(BassisServlet.class);
     static ServletConfig servletConfig;
     static ServletContext servletContext;
     static FileProperties properties;
     static BeanFactory beanFactory;
-    private static Logger logger = Logger.getLogger(BassisServlet.class);
     static Map<String, Class<?>> mapActions = new HashMap<>();
     static Map<String, Method> mapMethods = new HashMap<>();
 

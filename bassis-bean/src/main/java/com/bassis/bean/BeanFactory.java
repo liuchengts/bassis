@@ -1,7 +1,12 @@
 package com.bassis.bean;
 
+import com.bassis.bean.annotation.Scope;
 import com.bassis.bean.annotation.impl.AutowiredImpl;
 import com.bassis.bean.common.Bean;
+import com.bassis.bean.common.enums.ScopeEnum;
+import com.bassis.bean.event.ApplicationEventPublisher;
+import com.bassis.bean.event.domain.AutowiredEvent;
+import com.bassis.bean.event.domain.ResourcesEvent;
 import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.tools.exception.CustomException;
 import net.sf.cglib.beans.BeanGenerator;
@@ -28,18 +33,18 @@ public class BeanFactory {
         return BeanFactory.LazyHolder.INSTANCE;
     }
 
+    private static final ApplicationEventPublisher applicationEventPublisher = ApplicationEventPublisher.getInstance();
     /**
-     * 所有bean存储器
+     * 一级缓存：所有bean存储器
      */
-    Map<Class, LinkedList<Bean>> objectBeanStorage = new HashMap<>();
+    private static final Map<Class<?>, LinkedList<Bean>> objectBeanStorage = new HashMap<>(256);
 
     /**
-     * 自动注入bean的关系
+     * 二级缓存：存放正在初始化的对象，用于解决循环依赖
      */
-    Map<Class, Set<Class>> autowiredBeanTree = new LinkedHashMap<>();
+    private static final Map<Class<?>, Bean> singletonFactories = new HashMap<>(16);
 
     /**
-     * s
      * 启动 BeanFactory
      *
      * @param scanPath 扫描起点
@@ -49,7 +54,62 @@ public class BeanFactory {
         Scanner.startScan(scanPath);
         //component扫描
         ComponentImpl.getInstance();
+        //发布资源就绪事件
+        applicationEventPublisher.publishEvent(new ResourcesEvent(Object.class));
         return getInstance();
+    }
+
+    /**
+     * 检查class是否带有范围注解 默认为单实例
+     *
+     * @param aclass 要检测的class
+     * @return 单实例为true 多实例为false
+     */
+    public static boolean isScopeSingleton(Class<?> aclass) {
+        return !aclass.isAnnotationPresent(Scope.class) || !aclass.getAnnotation(Scope.class).value().equals(ScopeEnum.PROTOTYPE);
+    }
+
+    /**
+     * 检查class是否需要创建bean
+     *
+     * @param aclass 要检测的class
+     * @return 需要创建为true 不需要创建为false
+     */
+    public static boolean isCreateBean(Class<?> aclass) {
+        return !isScopeSingleton(aclass) || !objectBeanStorage.containsKey(aclass);
+    }
+
+    /**
+     * 创建一个bean
+     *
+     * @param aclass 要创建的class
+     * @return 返回创建好的bean
+     */
+    public synchronized void newBeanTask(Class<?> aclass) {
+        if (objectBeanStorage.containsKey(aclass)) {
+            //第一阶段，检测一级缓存中是否已存在当前aclass
+            //存在bean 直接返回第一个bean
+//            applicationEventPublisher.publishEvent(new AutowiredEvent(aclass));
+        } else if (singletonFactories.containsKey(aclass)) {
+            //第三阶段，检测二级缓存中是否已存在当前aclass
+            // 存在bean 将当前bean返回
+            Bean bean = singletonFactories.get(aclass);
+            //将这个bean放入一级缓存
+            LinkedList<Bean> beans = new LinkedList<>();
+            beans.add(bean);
+            //按顺序检测下来一级缓存中不存在，这里直接塞入，并且删除二级缓存
+            objectBeanStorage.put(aclass, beans);
+            singletonFactories.remove(aclass);
+            applicationEventPublisher.publishEvent(new AutowiredEvent(aclass));
+        } else {
+            //创建一个待初始化的bean放入二级缓存
+            Bean bean = new Bean(ProxyFactory.invoke(aclass), 1);
+            singletonFactories.put(aclass, bean);
+            //检测资源注入,并且加入事件
+            AutowiredImpl autowired = new AutowiredImpl();
+            applicationEventPublisher.addListener(autowired);
+            autowired.analyseFields(bean.getObject(), true);
+        }
     }
 
     /**
@@ -58,8 +118,13 @@ public class BeanFactory {
      * @param aclass 要获得的实例
      * @return 返回获得的bean
      */
-    public Object getBean(Class aclass) {
-        return matchBean(ComponentImpl.getBeansClass(aclass));
+    public Bean getBean(Class<?> aclass) {
+        Bean bean = null;
+        if (objectBeanStorage.containsKey(aclass)) {
+            //存在bean 直接返回第一个bean
+            bean = objectBeanStorage.get(aclass).getFirst();
+        }
+        return bean;
     }
 
     /**
@@ -68,83 +133,8 @@ public class BeanFactory {
      * @param name 要获得的实例的别名
      * @return 返回获得的bean
      */
-    public Object getBean(String name) {
-        return matchBean(ComponentImpl.getBeansClass(name));
-    }
-
-    /**
-     * 匹配bean
-     *
-     * @param aclass 实例
-     * @return 返回获得的bean
-     */
-    private Object matchBean(Class aclass) {
-        //代理生成
-        Object object = this.newBean(aclass);
-        //自动注入资源
-        AutowiredImpl.analyseFields(object, true);
-        return object;
-    }
-
-    /**
-     * 创建一个bean
-     *
-     * @param aclass 要创建的bean  class
-     * @return 返回创建的bean对象
-     */
-    public synchronized Bean newBean(Class aclass) {
-        LinkedList<Bean> beans;
-        if (objectBeanStorage.containsKey(aclass)) {
-            beans = objectBeanStorage.get(aclass);
-        } else {
-            beans = new LinkedList<>();
-        }
-        Bean bean = new Bean(ProxyFactory.invoke(aclass), beans.size() + 1);
-        beans.add(bean);
-        objectBeanStorage.put(aclass, beans);
-        return bean;
-    }
-
-    /**
-     * 创建一个autowired需要的bean
-     *
-     * @param oclass 调用注入的class
-     * @param aclass 要注入的对象  class
-     * @return 返回创建的bean对象
-     */
-    public synchronized Bean newAutowiredBean(Class oclass, Class aclass) {
-        LinkedList<Bean> beans;
-        Bean bean;
-        //a -> b  只有当aclass中已存在当前oclass对象，即为循环依赖
-        //a -> b -> c -> a 追踪链
-        if (autowiredBeanTree.containsKey(aclass)
-                && autowiredBeanTree.get(aclass).contains(oclass)) {
-            CustomException.throwOut(oclass.getName() + " autowired bean Circular dependencies" + aclass.getName());
-        }
-        //TODO 这里要实现注入追踪链方法
-        if (objectBeanStorage.containsKey(aclass)) {
-            beans = objectBeanStorage.get(aclass);
-        } else {
-            beans = new LinkedList<>();
-        }
-        if (!beans.isEmpty()) {
-            bean = beans.getFirst();
-        } else {
-            bean = new Bean(ProxyFactory.invoke(aclass), beans.size() + 1);
-            //加入bean存储器
-            beans.add(bean);
-            objectBeanStorage.put(aclass, beans);
-        }
-        //加入autowired依赖关系
-        Set<Class> classBeans;
-        if (autowiredBeanTree.containsKey(oclass)) {
-            classBeans = autowiredBeanTree.get(oclass);
-        } else {
-            classBeans = new HashSet<>();
-        }
-        classBeans.add(aclass);
-        autowiredBeanTree.put(oclass, classBeans);
-        return bean;
+    public Bean getBean(String name) {
+        return getBean(ComponentImpl.getBeansClass(name));
     }
 
     /**
@@ -174,5 +164,20 @@ public class BeanFactory {
             CustomException.throwOut(" removeBean exception", e);
         }
         return false;
+    }
+
+
+    /**
+     * 获得class 创建的实例列表
+     *
+     * @param aclass 要获得的class
+     * @return 返回创建的实例列表
+     */
+    public LinkedList<Bean> getBeanCount(Class<?> aclass) {
+        LinkedList<Bean> beans = new LinkedList<>();
+        if (objectBeanStorage.containsKey(aclass)) {
+            beans = objectBeanStorage.get(aclass);
+        }
+        return beans;
     }
 }

@@ -1,14 +1,15 @@
 package com.bassis.bean.annotation.impl;
 
+import com.bassis.bean.BeanFactory;
 import com.bassis.bean.Scanner;
 import com.bassis.bean.annotation.Component;
-import com.bassis.bean.proxy.ProxyFactory;
 import org.apache.log4j.Logger;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.string.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 处理bean类型注解
@@ -17,6 +18,7 @@ import java.util.*;
  */
 public class ComponentImpl {
     private static Logger logger = Logger.getLogger(ComponentImpl.class);
+    private static BeanFactory beanFactory = BeanFactory.getInstance();
 
     private static class LazyHolder {
         private static final ComponentImpl INSTANCE = new ComponentImpl();
@@ -32,29 +34,26 @@ public class ComponentImpl {
     /**
      * 扫描到的class
      */
-    private static Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
+    private static final Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
 
     /**
-     * bean存储器， name:class
+     * class存储器， name:class
      */
-    private static Map<String, Class> beansObject;
+    private static final Map<String, Class<?>> beansObject = new HashMap<>();
     /**
      * bean别名存储器， 原始名称:别名
      */
-    private static Map<String, String> aliasBeanName;
+    private static final Map<String, String> aliasBeanName = new HashMap<>();
     /**
-     * bean中的方法存储器， beanName:Methods
+     * bean中的方法存储器， beanName:Methods:@aop true
      */
-    private static Map<String, Set<Method>> beanMethods;
+    private static final Map<String, Map<Method, Boolean>> beanMethods = new HashMap<>();
 
     /**
      * 只处理当前实现类的注解
      */
     static {
         logger.debug("@Component分析开始");
-        beansObject = new HashMap<>();
-        aliasBeanName = new HashMap<>();
-        beanMethods = new HashMap<>();
         for (Class<?> clz : scanPackageList) {
             try {
                 if (clz.isAnnotationPresent(Component.class)) analyse(clz);
@@ -62,6 +61,8 @@ public class ComponentImpl {
                 CustomException.throwOut("@Component分析异常：", e);
             }
         }
+        //初始化bean
+        initializeBean();
     }
 
 
@@ -71,7 +72,7 @@ public class ComponentImpl {
      * @param name bean别名
      * @return 返回class
      */
-    public static Class getBeansClass(String name) {
+    public static Class<?> getBeansClass(String name) {
         String key = "";
         if (!beansObject.containsKey(name)) {
             if (aliasBeanName.containsKey(name)) {
@@ -89,7 +90,7 @@ public class ComponentImpl {
      * @param clz bean的class
      * @return 返回class
      */
-    public static Class getBeansClass(Class clz) {
+    public static Class<?> getBeansClass(Class<?> clz) {
         String key = clz.getName();
         if (!beansObject.containsKey(key)) {
             return null;
@@ -98,20 +99,79 @@ public class ComponentImpl {
     }
 
     /**
-     * 根据bean的class获得当前的方法
+     * 根据bean的class获得当前所有的的方法
      *
      * @param clz bean的class
-     * @return 当前的所有方法
+     * @return 当前的所有方法:aop true
      */
-    public static Set<Method> getBeanMethods(Class clz) {
+    public static Map<Method, Boolean> getBeanAllMethods(Class<?> clz) {
+        return getBeanAllMethods(clz.getName());
+    }
+
+    /**
+     * 根据bean的class获得当前带有@Aop的方法
+     *
+     * @param clz bean的class
+     * @return 当前的所有带aop的方法
+     */
+    public static Set<Method> getBeanAopMethods(Class<?> clz) {
+        return getBeanAopMethods(clz.getName());
+    }
+
+    /**
+     * 根据bean的class获得当前不带@Aop的方法
+     *
+     * @param clz bean的class
+     * @return 当前的所有带aop的方法
+     */
+    public static Set<Method> getBeanMethods(Class<?> clz) {
         return getBeanMethods(clz.getName());
     }
 
     /**
-     * 根据bean的class获得当前的方法
+     * 根据bean的name获得当前所有的的方法
      *
      * @param name bean的name
-     * @return 当前的所有方法
+     * @return 当前的所有方法:aop true
+     */
+    public static Map<Method, Boolean> getBeanAllMethods(String name) {
+        String key = "";
+        if (!beansObject.containsKey(name)) {
+            if (aliasBeanName.containsKey(name)) {
+                key = aliasBeanName.get(name);
+            }
+        } else {
+            key = name;
+        }
+        if (!beanMethods.containsKey(key)) return null;
+        return beanMethods.get(key);
+    }
+
+    /**
+     * 根据bean的name获得当前带有@Aop的方法
+     *
+     * @param name bean的name
+     * @return 当前的所有带aop的方法
+     */
+    public static Set<Method> getBeanAopMethods(String name) {
+        String key = "";
+        if (!beansObject.containsKey(name)) {
+            if (aliasBeanName.containsKey(name)) {
+                key = aliasBeanName.get(name);
+            }
+        } else {
+            key = name;
+        }
+
+        if (!beanMethods.containsKey(key)) return null;
+        return beanMethods.get(key).entrySet().stream().filter(map -> Boolean.TRUE.equals(map.getValue())).map(map -> map.getKey()).collect(Collectors.toSet());
+    }
+
+    /**
+     * 根据bean的name获得当前不带@Aop的方法
+     *
+     * @param name bean的name
+     * @return 当前的所有带aop的方法
      */
     public static Set<Method> getBeanMethods(String name) {
         String key = "";
@@ -122,12 +182,9 @@ public class ComponentImpl {
         } else {
             key = name;
         }
-        if (!beanMethods.containsKey(key)) {
-            return null;
-        }
-        return beanMethods.get(key);
+        if (!beanMethods.containsKey(key)) return null;
+        return beanMethods.get(key).entrySet().stream().filter(map -> Boolean.FALSE.equals(map.getValue())).map(map -> map.getKey()).collect(Collectors.toSet());
     }
-
 
     /**
      * 处理 Component 注解
@@ -150,9 +207,21 @@ public class ComponentImpl {
             }
             aliasBeanName.put(aliasName, clz.getName());
         }
-        Set<Method> setMethod = new HashSet<>();
-        Collections.addAll(setMethod, clz.getDeclaredMethods());
+        Map<Method, Boolean> mapMethod = new HashMap<>();
         beansObject.put(name, clz);
-        beanMethods.put(name, setMethod);
+        Arrays.stream(clz.getDeclaredMethods()).forEach(method -> {
+            mapMethod.put(method, AopImpl.isAop(method));
+        });
+        beanMethods.put(name, mapMethod);
     }
+
+    /**
+     * 初始化bean
+     */
+    private static void initializeBean() {
+        beansObject.values().forEach(clz -> {
+            if (BeanFactory.isCreateBean(clz)) beanFactory.newBeanTask(clz);
+        });
+    }
+
 }

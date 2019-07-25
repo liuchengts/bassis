@@ -9,10 +9,7 @@ import com.bassis.tools.string.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * aop切面实现,只针对方法级别
@@ -25,13 +22,13 @@ public class AopImpl {
     public static final String PREHANDLE_NAME = "preHandle";// 前置
     public static final String POSTHANDLE_NAME = "postHandle";// 后置
     public static final String AFTERCOMPLETION_NAME = "afterCompletion";// 完成
-    Method preHandle = null; //前置方法
-    Method postHandle = null;//后置方法
-    Method afterCompletion = null;//完成方法
-    Object[] aopParameters; //aop方法携带的参数
-    Object object; //aop切点实例
-    Object aopObject; //aop实现类
-    Class aopService = AopService.class; //aop实现接口
+    private Method preHandle = null; //前置方法
+    private Method postHandle = null;//后置方法
+    private Method afterCompletion = null;//完成方法
+    private Object[] aopParameters; //aop方法携带的参数
+    private Object object; //aop切点实例
+    private Object aopObject; //aop实现类
+    private Class aopService = AopService.class; //aop实现接口
 
     /**
      * 检测方法是否有aop注解
@@ -69,11 +66,17 @@ public class AopImpl {
             aopParameters = parameters.toArray();
             Set<Method> methods = null;
             if (null != aclass) {
-                methods = ComponentImpl.getBeanMethods(aclass);
+                Map<Method, Boolean> mapMethods = ComponentImpl.getBeanAllMethods(aclass);
+                if (!mapMethods.isEmpty()) {
+                    methods = mapMethods.keySet();
+                }
                 if (null == methods) logger.warn(position + " @AopService aclass is null");
             } else if (!StringUtils.isEmptyString(value)) {
                 aclass = ComponentImpl.getBeansClass(value);
-                methods = ComponentImpl.getBeanMethods(value);
+                Map<Method, Boolean> mapMethods = ComponentImpl.getBeanAllMethods(value);
+                if (!mapMethods.isEmpty()) {
+                    methods = mapMethods.keySet();
+                }
                 if (null == methods) logger.warn(position + " @AopService value is null");
             } else {
                 CustomException.throwOut(position + " @AopService error invalid parameter");

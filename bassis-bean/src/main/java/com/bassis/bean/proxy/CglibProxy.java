@@ -1,12 +1,15 @@
 package com.bassis.bean.proxy;
 
 import com.bassis.bean.annotation.impl.AopImpl;
+import com.bassis.bean.annotation.impl.ComponentImpl;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.apache.log4j.Logger;
 
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 基于cglib类的代理
@@ -17,6 +20,16 @@ public class CglibProxy implements MethodInterceptor {
     private Class<?> target;
     //代理得到的对象
     private Object proxy;
+    //带aop的方法
+    private Set<Method> beanAopMethods = new HashSet<>();
+
+    public Set<Method> getBeanAopMethods() {
+        return beanAopMethods;
+    }
+
+    public void setBeanAopMethods(Set<Method> beanAopMethods) {
+        this.beanAopMethods = beanAopMethods;
+    }
 
     public Class<?> getTarget() {
         return target;
@@ -53,6 +66,7 @@ public class CglibProxy implements MethodInterceptor {
     public static Object getInstance(Class clazz) {
         CglibProxy _proxy = new CglibProxy();
         _proxy.setTarget(clazz);
+        _proxy.setBeanAopMethods(ComponentImpl.getBeanAopMethods(_proxy.getTarget()));
         return _proxy.newProxy();
     }
 
@@ -67,6 +81,7 @@ public class CglibProxy implements MethodInterceptor {
     public static Object getInstance(Object obj) {
         CglibProxy _proxy = new CglibProxy();
         _proxy.setTarget(obj.getClass());
+        _proxy.setBeanAopMethods(ComponentImpl.getBeanAopMethods(_proxy.getTarget()));
         return _proxy.newProxy();
     }
 
@@ -114,7 +129,7 @@ public class CglibProxy implements MethodInterceptor {
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
         Object result = null;
-        boolean isAop = AopImpl.isAop(method);
+        boolean isAop = this.getBeanAopMethods().contains(method);
         if (isAop) {
             //初始化aop
             AopImpl aop = new AopImpl();

@@ -1,7 +1,8 @@
 package com.bassis.tools.reflex;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 import com.bassis.tools.exception.CustomException;
 
@@ -104,5 +105,34 @@ public class Reflection {
             CustomException.throwOut(error_str, e);
         }
         return null;
+    }
+
+    /**
+     * 获取接口上的泛型
+     *
+     * @param aclass 要获取的接口
+     * @param index  第几个泛型 默认第一个,下标从1开始
+     * @return 返回获取的泛型
+     */
+    public static Class getInterfaceT(Class<?> aclass, int index) {
+        if (index <= 1) index = 0;
+        else index--;
+        Type[] types = aclass.getGenericInterfaces();
+        ParameterizedType parameterized = (ParameterizedType) types[index];
+        return (Class<?>) parameterized.getActualTypeArguments()[index];
+    }
+
+    /**
+     * 获取类上的泛型
+     *
+     * @param aclass 要获取的类
+     * @param index  第几个泛型 默认第一个,下标从1开始
+     * @return 返回获取的泛型
+     */
+    public static Class getClassT(Class<?> aclass, int index) {
+        if (index <= 1) index = 0;
+        else index--;
+        return (Class<?>) ((ParameterizedType) aclass.getGenericSuperclass()).getActualTypeArguments()[index];
+
     }
 }

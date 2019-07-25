@@ -3,6 +3,9 @@ package com.bassis.bean.annotation.impl;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.annotation.Autowired;
 import com.bassis.bean.common.Bean;
+import com.bassis.bean.common.FieldBean;
+import com.bassis.bean.event.ApplicationListener;
+import com.bassis.bean.event.domain.AutowiredEvent;
 import com.bassis.bean.proxy.ProxyFactory;
 import org.apache.log4j.Logger;
 import com.bassis.tools.exception.CustomException;
@@ -10,15 +13,20 @@ import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
 
 import java.lang.reflect.Field;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * 对当前所有资源的自动注入进行实现
  *
  * @see Autowired
  */
-public class AutowiredImpl {
+public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
     private static Logger logger = Logger.getLogger(AutowiredImpl.class);
     private static BeanFactory beanFactory = BeanFactory.getInstance();
+    private static Set<FieldBean> fieldBeans = new HashSet<>();
 
     /**
      * 全局字段注解分析
@@ -26,7 +34,7 @@ public class AutowiredImpl {
      * @param object     当前类
      * @param superClass 是否从父类获取字段
      */
-    public static void analyseFields(Object object, boolean superClass) {
+    public void analyseFields(Object object, boolean superClass) {
         Field[] fields;
         if (superClass) {
             fields = object.getClass().getSuperclass().getDeclaredFields();
@@ -34,7 +42,6 @@ public class AutowiredImpl {
             fields = object.getClass().getDeclaredFields();
         }
         for (Field field : fields) {
-            logger.info(field.getName());
             if (field.isAnnotationPresent(Autowired.class)) {
                 fieldAutowired(object, field);
             }
@@ -48,8 +55,8 @@ public class AutowiredImpl {
      * @param obj   当前类
      * @param field 要注入的字段
      */
-    private static void fieldAutowired(Object obj, Field field) {
-        String position = "bean:" + obj.getClass().getName() + " field:" + field.getName();
+    private void fieldAutowired(Object obj, Field field) {
+        String position = "[fieldAutowired] bean:" + obj.getClass().getName() + " field:" + field.getName();
         try {
             field.setAccessible(true);
             Class<?> cla = field.getType();
@@ -75,24 +82,57 @@ public class AutowiredImpl {
             } else if (!ReflexUtils.isWrapClass_Pack(field.getType().getName())) {
                 //是基础类型的包装类型
                 fieldClass = field.getType().getClass();
-            } else {
-                //基本数据类型
-            }
-            Object fieldObject = null;
+            }  //基本数据类型
+
             if (null != fieldClass) {
-                Bean bean = beanFactory.newAutowiredBean(obj.getClass(), fieldClass);
-                if (null == bean) {
-                    CustomException.throwOut(position + " @Autowired not resource bean");
-                }
-                fieldObject = bean.getObject();
+                beanFactory.newBeanTask(fieldClass);
             }
-            if (null == fieldObject) {
-                CustomException.throwOut(position + " @Autowired not resource object");
-            }
-            field.set(obj, fieldObject);
-            logger.debug(position + " 字段参数注入成功");
         } catch (Exception e) {
             logger.error(position + " 字段参数注入失败", e);
         }
+    }
+
+    /**
+     * 执行注入
+     */
+    private void twoStageAutowired() {
+        fieldBeans.forEach(this::fieldBeanAutowired);
+    }
+
+    /**
+     * 单个bean注入
+     *
+     * @param fieldBean 要操作的fieldBean
+     */
+    private void fieldBeanAutowired(FieldBean fieldBean) {
+        String position = "[twoStageAutowired] bean: " + fieldBean.getObject().getClass().getName() + "field:" + fieldBean.getField().getName();
+        Bean bean = beanFactory.getBean(fieldBean.getFieldClass());
+        if (null == bean) {
+            CustomException.throwOut(position + " @Autowired not resource bean");
+        }
+        assert bean != null;
+        Object fieldObject = bean.getObject();
+        if (null == fieldObject) {
+            CustomException.throwOut(position + " @Autowired not resource object");
+        }
+        try {
+            fieldBean.getField().set(fieldBean.getObject(), fieldObject);
+        } catch (IllegalAccessException e) {
+            logger.error(position + " 字段参数注入失败", e);
+        }
+        logger.debug(position + " 字段参数注入成功");
+    }
+
+    @Override
+    public void onApplicationEvent(AutowiredEvent var1) {
+        Class<?> aclass = (Class<?>) var1.getSource();
+        assert aclass != null;
+        if (!fieldBeans.contains(aclass)) return;
+        Optional<FieldBean> optionalFieldBean = fieldBeans.stream().filter(fBean -> fBean.getFieldClass().equals(aclass)).findFirst();
+        if (!optionalFieldBean.isPresent()) {
+            logger.debug(aclass.getName() + " 参数注入失败");
+            return;
+        }
+        fieldBeanAutowired(optionalFieldBean.get());
     }
 }
