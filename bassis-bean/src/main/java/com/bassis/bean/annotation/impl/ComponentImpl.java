@@ -220,7 +220,7 @@ public class ComponentImpl {
      */
     private static void initializeBean() {
         beansObject.values().forEach(clz -> {
-            if (BeanFactory.isCreateBean(clz)) beanFactory.newBeanTask(clz);
+            beanFactory.newBeanTask(clz);
         });
     }
 

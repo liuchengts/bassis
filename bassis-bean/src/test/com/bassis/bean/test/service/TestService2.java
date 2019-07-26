@@ -10,7 +10,7 @@ public class TestService2 {
 
     public String out() {
         String str = "TestService2";
-        System.out.println(str + testService3.out());
+        System.out.println(str + testService3.out2());
         return str;
     }
 }

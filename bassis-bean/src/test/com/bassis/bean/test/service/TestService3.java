@@ -13,4 +13,9 @@ public class TestService3 {
         System.out.println(str + testService1.out());
         return str;
     }
+    public String out2() {
+        String str = "TestService3";
+        System.out.println(str );
+        return str;
+    }
 }
