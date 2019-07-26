@@ -1,11 +1,9 @@
 package com.bassis.bean.event;
 
-import com.bassis.bean.BeanFactory;
 import com.bassis.tools.reflex.Reflection;
 
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ApplicationEventPublisher {
 
@@ -20,16 +18,21 @@ public class ApplicationEventPublisher {
         return ApplicationEventPublisher.LazyHolder.INSTANCE;
     }
 
-    private final static Map<ApplicationEvent, Set<ApplicationListener>> listeners = new HashMap<>();
+    private final static Map<Class<?>, Set<ApplicationListener>> listeners = new ConcurrentHashMap<>();
 
     /**
      * 添加事件
      *
      * @param listener 要添加的事件
      */
-    public void addListener(ApplicationListener listener) {
-        System.out.println(Reflection.getInterfaceT(listener.getClass(), 1).getName());
-//        listeners.add(listener);
+    public synchronized void addListener(ApplicationListener listener) {
+        Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
+        Set<ApplicationListener> listenerSet = new HashSet<>();
+        if (listeners.containsKey(aclass)) {
+            listenerSet = listeners.get(aclass);
+        }
+        listenerSet.add(listener);
+        listeners.put(aclass, listenerSet);
     }
 
     /**
@@ -37,8 +40,17 @@ public class ApplicationEventPublisher {
      *
      * @param listener 要移除的事件
      */
-    public void removeListener(ApplicationListener listener) {
-        listeners.remove(listener);
+    public synchronized void removeListener(ApplicationListener listener) {
+        Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
+        if (!listeners.containsKey(aclass)) return;
+        Set<ApplicationListener> listenerSet = listeners.get(aclass);
+        if (!listenerSet.contains(listener)) return;
+        listenerSet.remove(listener);
+        if (listenerSet.isEmpty()) {
+            listeners.remove(aclass);
+        } else {
+            listeners.put(aclass, listenerSet);
+        }
     }
 
     /**
@@ -47,18 +59,18 @@ public class ApplicationEventPublisher {
      * @param event
      */
     public void publishEvent(ApplicationEvent event) {
-        if (listeners.containsKey(event)) {
-            Set<ApplicationListener> listenerSet = listeners.get(event);
-        }
-        this.notifyListeners(event);
+        Class<?> aclass = event.getClass();
+        if (!listeners.containsKey(aclass)) return;
+        Set<ApplicationListener> listenerSet = listeners.get(aclass);
+        this.notifyListeners(listenerSet, event);
     }
 
     /**
      * 通知所有的Listener
      */
-    private void notifyListeners(ApplicationEvent event) {
-//        listeners.forEach(listener -> {
-//            listener.onApplicationEvent(event);
-//        });
+    private void notifyListeners(Set<ApplicationListener> listenerSet, ApplicationEvent event) {
+        listenerSet.forEach(listener -> {
+            listener.onApplicationEvent(event);
+        });
     }
 }

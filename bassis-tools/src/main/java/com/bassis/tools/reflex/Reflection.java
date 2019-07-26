@@ -114,7 +114,7 @@ public class Reflection {
      * @param index  第几个泛型 默认第一个,下标从1开始
      * @return 返回获取的泛型
      */
-    public static Class getInterfaceT(Class<?> aclass, int index) {
+    public static Class<?> getInterfaceT(Class<?> aclass, int index) {
         if (index <= 1) index = 0;
         else index--;
         Type[] types = aclass.getGenericInterfaces();
@@ -129,7 +129,7 @@ public class Reflection {
      * @param index  第几个泛型 默认第一个,下标从1开始
      * @return 返回获取的泛型
      */
-    public static Class getClassT(Class<?> aclass, int index) {
+    public static Class<?> getClassT(Class<?> aclass, int index) {
         if (index <= 1) index = 0;
         else index--;
         return (Class<?>) ((ParameterizedType) aclass.getGenericSuperclass()).getActualTypeArguments()[index];

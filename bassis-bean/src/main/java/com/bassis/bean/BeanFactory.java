@@ -55,6 +55,7 @@ public class BeanFactory {
         //component扫描
         ComponentImpl.getInstance();
         //发布资源就绪事件
+        applicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
         applicationEventPublisher.publishEvent(new ResourcesEvent(Object.class));
         return getInstance();
     }
@@ -88,10 +89,9 @@ public class BeanFactory {
     public synchronized void newBeanTask(Class<?> aclass) {
         if (objectBeanStorage.containsKey(aclass)) {
             //第一阶段，检测一级缓存中是否已存在当前aclass
-            //存在bean 直接返回第一个bean
-//            applicationEventPublisher.publishEvent(new AutowiredEvent(aclass));
+            //存在bean
         } else if (singletonFactories.containsKey(aclass)) {
-            //第三阶段，检测二级缓存中是否已存在当前aclass
+            //第二阶段，检测二级缓存中是否已存在当前aclass
             // 存在bean 将当前bean返回
             Bean bean = singletonFactories.get(aclass);
             //将这个bean放入一级缓存
@@ -100,7 +100,6 @@ public class BeanFactory {
             //按顺序检测下来一级缓存中不存在，这里直接塞入，并且删除二级缓存
             objectBeanStorage.put(aclass, beans);
             singletonFactories.remove(aclass);
-            applicationEventPublisher.publishEvent(new AutowiredEvent(aclass));
         } else {
             //创建一个待初始化的bean放入二级缓存
             Bean bean = new Bean(ProxyFactory.invoke(aclass), 1);

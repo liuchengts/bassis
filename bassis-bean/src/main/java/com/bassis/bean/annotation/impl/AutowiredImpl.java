@@ -85,7 +85,9 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
             }  //基本数据类型
 
             if (null != fieldClass) {
+                fieldBeans.add(new FieldBean(obj, field, fieldClass));
                 beanFactory.newBeanTask(fieldClass);
+
             }
         } catch (Exception e) {
             logger.error(position + " 字段参数注入失败", e);
@@ -97,6 +99,7 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
      */
     private void twoStageAutowired() {
         fieldBeans.forEach(this::fieldBeanAutowired);
+        fieldBeans.clear();
     }
 
     /**
@@ -125,14 +128,6 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
 
     @Override
     public void onApplicationEvent(AutowiredEvent var1) {
-        Class<?> aclass = (Class<?>) var1.getSource();
-        assert aclass != null;
-        if (!fieldBeans.contains(aclass)) return;
-        Optional<FieldBean> optionalFieldBean = fieldBeans.stream().filter(fBean -> fBean.getFieldClass().equals(aclass)).findFirst();
-        if (!optionalFieldBean.isPresent()) {
-            logger.debug(aclass.getName() + " 参数注入失败");
-            return;
-        }
-        fieldBeanAutowired(optionalFieldBean.get());
+        twoStageAutowired();
     }
 }
