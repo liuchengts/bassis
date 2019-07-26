@@ -1,6 +1,7 @@
 package com.bassis.bean.annotation.impl;
 
 import com.bassis.bean.BeanFactory;
+import com.bassis.bean.CachedBeanCopier;
 import com.bassis.bean.annotation.Autowired;
 import com.bassis.bean.common.Bean;
 import com.bassis.bean.common.FieldBean;
@@ -109,7 +110,15 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
      */
     private void fieldBeanAutowired(FieldBean fieldBean) {
         String position = "[twoStageAutowired] bean: " + fieldBean.getObject().getClass().getName() + "field:" + fieldBean.getField().getName();
-        Bean bean = beanFactory.getBean(fieldBean.getFieldClass());
+        Bean bean = null;
+        boolean singleton = BeanFactory.isScopeSingleton(fieldBean.getFieldClass());
+        if (!singleton) {
+            //多实例
+            bean = beanFactory.getByLastBean(fieldBean.getFieldClass());
+        } else {
+            //单实例
+            bean = beanFactory.getBeanFirst(fieldBean.getFieldClass());
+        }
         if (null == bean) {
             CustomException.throwOut(position + " @Autowired not resource bean");
         }

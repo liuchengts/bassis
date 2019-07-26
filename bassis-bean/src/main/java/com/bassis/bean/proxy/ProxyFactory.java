@@ -15,7 +15,7 @@ public class ProxyFactory {
      * @param target 要代理的class
      * @return 返回代理对象
      */
-    public static Object invoke(Class target) {
+    public static Object invoke(Class<?> target) {
         Object factory;
         // 判断接口与类
         if (target.isInterface()) {

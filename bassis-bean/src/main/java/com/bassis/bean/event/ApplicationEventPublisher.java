@@ -25,7 +25,7 @@ public class ApplicationEventPublisher {
      *
      * @param listener 要添加的事件
      */
-    public synchronized void addListener(ApplicationListener listener) {
+    public static synchronized void addListener(ApplicationListener listener) {
         Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
         Set<ApplicationListener> listenerSet = new HashSet<>();
         if (listeners.containsKey(aclass)) {
@@ -40,7 +40,7 @@ public class ApplicationEventPublisher {
      *
      * @param listener 要移除的事件
      */
-    public synchronized void removeListener(ApplicationListener listener) {
+    public static synchronized void removeListener(ApplicationListener listener) {
         Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
         if (!listeners.containsKey(aclass)) return;
         Set<ApplicationListener> listenerSet = listeners.get(aclass);
@@ -58,17 +58,17 @@ public class ApplicationEventPublisher {
      *
      * @param event
      */
-    public void publishEvent(ApplicationEvent event) {
+    public static void publishEvent(ApplicationEvent event) {
         Class<?> aclass = event.getClass();
         if (!listeners.containsKey(aclass)) return;
         Set<ApplicationListener> listenerSet = listeners.get(aclass);
-        this.notifyListeners(listenerSet, event);
+        notifyListeners(listenerSet, event);
     }
 
     /**
      * 通知所有的Listener
      */
-    private void notifyListeners(Set<ApplicationListener> listenerSet, ApplicationEvent event) {
+    private static void notifyListeners(Set<ApplicationListener> listenerSet, ApplicationEvent event) {
         listenerSet.forEach(listener -> {
             listener.onApplicationEvent(event);
         });

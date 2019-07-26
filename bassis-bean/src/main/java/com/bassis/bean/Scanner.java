@@ -20,7 +20,7 @@ import java.util.jar.JarFile;
  * 扫描器
  */
 public class Scanner {
-    static Logger logger = Logger.getLogger(Scanner.class);
+    private  static Logger logger = Logger.getLogger(Scanner.class);
 
     private static class LazyHolder {
         private static final Scanner INSTANCE = new Scanner();

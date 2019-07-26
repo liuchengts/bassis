@@ -9,6 +9,7 @@ import com.bassis.tools.string.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -39,15 +40,15 @@ public class ComponentImpl {
     /**
      * class存储器， name:class
      */
-    private static final Map<String, Class<?>> beansObject = new HashMap<>();
+    private static final Map<String, Class<?>> beansObject = new ConcurrentHashMap<>();
     /**
      * bean别名存储器， 原始名称:别名
      */
-    private static final Map<String, String> aliasBeanName = new HashMap<>();
+    private static final Map<String, String> aliasBeanName = new ConcurrentHashMap<>();
     /**
      * bean中的方法存储器， beanName:Methods:@aop true
      */
-    private static final Map<String, Map<Method, Boolean>> beanMethods = new HashMap<>();
+    private static final Map<String, Map<Method, Boolean>> beanMethods = new ConcurrentHashMap<>();
 
     /**
      * 只处理当前实现类的注解
