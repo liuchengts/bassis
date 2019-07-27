@@ -1,2 +1,0 @@
-单独启动bean：
-BeanFactory.init(扫描路径);
