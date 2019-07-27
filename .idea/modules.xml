@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/bassis.iml" filepath="$PROJECT_DIR$/.idea/bassis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bassis.iml" filepath="$PROJECT_DIR$/bassis.iml" />
       <module fileurl="file://$PROJECT_DIR$/bassis_bean/bassis_bean.iml" filepath="$PROJECT_DIR$/bassis_bean/bassis_bean.iml" />
       <module fileurl="file://$PROJECT_DIR$/bassis_hibernate/bassis_hibernate.iml" filepath="$PROJECT_DIR$/bassis_hibernate/bassis_hibernate.iml" />
       <module fileurl="file://$PROJECT_DIR$/bassis_test/bassis_test.iml" filepath="$PROJECT_DIR$/bassis_test/bassis_test.iml" />
