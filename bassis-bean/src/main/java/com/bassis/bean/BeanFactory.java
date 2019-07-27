@@ -63,7 +63,8 @@ public class BeanFactory {
         Scanner.startScan(scanPath);
         //开始component扫描
         ComponentImpl.getInstance();
-
+        //将剩下没有循环依赖的bean放入存储器
+        getInstance().addBeanSingletonFactories();
         //发布资源就绪事件
         ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
         ApplicationEventPublisher.publishEvent(new ResourcesEvent(Object.class));
@@ -116,6 +117,13 @@ public class BeanFactory {
             ApplicationEventPublisher.addListener(autowired);
             autowired.analyseFields(bean.getObject(), true);
         }
+    }
+
+    /**
+     * 在所有bean创建完成之后将剩下没有循环依赖的bean放入存储器
+     */
+    private void addBeanSingletonFactories() {
+        singletonFactories.values().forEach(this::addBean);
     }
 
     /**
