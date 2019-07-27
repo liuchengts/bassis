@@ -1,6 +1,8 @@
-# bassis
+bassis
+---------------------------
 
 ## 本分支为master，为bassis项目最稳定分支
+
 ### 目的在于开发出类似springboot使用方式的框架，同时加入其它特性，使其原生支持分布式，借此窥探java语言特性、jvm、spring实现方式，使技术广度和深度得到提升，对后续阅读理解spring、hibernate等开源框架有一个强大的基础，对jvm有一定的认知能力。
 * 我是一个java开发者，而非spring开发者
 * 技术为了形成系统，站到更高的层面而学习，而不是为了工作
@@ -78,32 +80,3 @@
 * 多hibernate配置启动多实例
 * @Data 完成
 * 基本db操作实现
-
-## 目前进度(需要调整及未完成的功能)：
-
-### bassis_tools
-* 无，按需求适当增加
-
-### bassis_bean
-* @Autowired 需要根据反射实现自动获取注入对象 去掉aclass参数
-* @Aop 需要根据反射实现自动获取注入对象 去掉aclass参数
-* @Scope 需要针对多实例模式下的bean做copy或者重新创建操作
-
-### bassis_boot
-* 默认基本启动配置 需要支持个性化配置参数
-* 默认servlet容器 需要作为bassis_web基础依赖入口
-
-### bassis_web
-* @Controller 需要重写ioc逻辑 要与@Component保持一致
-* 请求路径自动匹配bean实现 需要优化路径存储已经寻址算法
-* @Interceptor及Interceptor栈实现 需要调试来兼容最新的aop功能
-* @RequestMapping 实现 需要配合路径自动匹配
-* 数据装配与解析返回基本实现 需要重写定义大部分返回逻辑，抽离页面与数据的耦合
-
-### bassis_hibernate
-* 多hibernate配置启动多实例 需要将其实例交由bassis_bean托管
-* @Data 完成 需要进行多数据源测试
-* 需要增加@transaction 实现
-
-### bassis_rpc
-* 需要增加rpc功能支持
