@@ -4,7 +4,7 @@ bassis
 ### 说明
 
 * bassis_tools 基于必须的jar支持重写一些工具方法
-* bassis_bean  bean管理工厂提供自动扫描、bean管理、全注解、ioc、aop、动态代理，全局事件等功能
+* bassis_bean  提供自动扫描、bean管理、全注解、ioc、aop、动态代理，全局事件等功能
 * bassis_boot  嵌入tomcat8.5，增加main函数启动方式，需要bassis_bean的支持
 * bassis_web   实现框架的web，提供类似springmvc的一些功能，例如控制器自动匹配、拦截器栈、及松耦合方式使用bassis_hibernate完成多数据源自动注入与切换等功能
 * bassis_hibernate  基于hibernate5.2进行封装，支持多数据源切换
