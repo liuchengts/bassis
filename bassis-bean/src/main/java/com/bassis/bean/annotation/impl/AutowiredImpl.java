@@ -8,6 +8,7 @@ import com.bassis.bean.common.FieldBean;
 import com.bassis.bean.event.ApplicationListener;
 import com.bassis.bean.event.domain.AutowiredEvent;
 import com.bassis.bean.proxy.ProxyFactory;
+import com.bassis.tools.reflex.Reflection;
 import org.apache.log4j.Logger;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.ReflexUtils;
@@ -17,6 +18,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * 对当前所有资源的自动注入进行实现
@@ -65,29 +67,25 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
             String value = annotation.value();
             Class<?> aclass = annotation.aclass();
             Class fieldClass = null;
-            if (!ReflexUtils.isWrapClass(field.getType().getName())) {
+            //优先从注解属性中获取
+            if (!ReflexUtils.isWrapClass(cla.getName())) {
                 //不是基础类型
-                if (null != aclass) {
-                    fieldClass = ComponentImpl.getBeansClass(aclass);
-                } else if (!StringUtils.isEmptyString(value)) {
+                fieldClass = ComponentImpl.getBeansClass(aclass);
+                if (null == fieldClass && !StringUtils.isEmptyString(value)) {
                     fieldClass = ComponentImpl.getBeansClass(value);
-                } else {
-                    if (cla.isInterface()) {
-                        CustomException.throwOut(position + " @Autowired not resource");
-                    } else {
-                        //如果是其他类型 没有参数声明 直接new当前类型
-                        fieldClass = cla;
-                    }
                 }
-            } else if (!ReflexUtils.isWrapClass_Pack(field.getType().getName())) {
-                //是基础类型的包装类型
-                fieldClass = field.getType().getClass();
-            }  //基本数据类型
+            }
+            //注解中获取不到时从默认关系中获取
+            if (null == fieldClass) {
+                fieldClass = beanFactory.getFieldClass(cla);
+            }
             if (null != fieldClass) {
                 //放入当前注入对象任务区，等待循环依赖资源初始化完成
                 fieldBeans.add(new FieldBean(obj, field, fieldClass));
                 //根据fieldClass 向beanFactory提交一个创建bean的任务，如果任务完成会通知所有关联的注入对象进行资源注入
                 beanFactory.newBeanTask(fieldClass);
+            } else {
+                logger.warn(position + " 没有找到可用资源");
             }
         } catch (Exception e) {
             logger.error(position + " 字段参数注入失败", e);
@@ -130,4 +128,5 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
     public void onApplicationEvent(AutowiredEvent event) {
         this.twoStageAutowired();
     }
+
 }

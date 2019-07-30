@@ -9,12 +9,14 @@ import com.bassis.bean.event.domain.AutowiredEvent;
 import com.bassis.bean.event.domain.ResourcesEvent;
 import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.reflex.Reflection;
 import net.sf.cglib.beans.BeanGenerator;
 import org.apache.log4j.Logger;
 import com.bassis.bean.annotation.impl.ComponentImpl;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * bean工厂
@@ -43,7 +45,8 @@ public class BeanFactory {
      * 二级缓存：存放正在初始化的对象，用于解决循环依赖
      */
     private static final Map<Class<?>, Bean> singletonFactories = new ConcurrentHashMap<>(16);
-    private static final String CGLIB_TAG = "$$EnhancerByCGLIB$$";
+
+    public static final String CGLIB_TAG = "$$EnhancerByCGLIB$$";
 
     static {
         //初始化bean拷贝器
@@ -69,6 +72,26 @@ public class BeanFactory {
         ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
         ApplicationEventPublisher.publishEvent(new ResourcesEvent(Object.class));
         return getInstance();
+    }
+
+    /**
+     * 根据bean名称获得Class
+     *
+     * @param name bean别名
+     * @return 返回class
+     */
+    public static Class<?> getBeansClass(String name) {
+        return ComponentImpl.getBeansClass(name);
+    }
+
+    /**
+     * 根据beanClass获得Class
+     *
+     * @param clz bean的class
+     * @return 返回class
+     */
+    public static Class<?> getBeansClass(Class<?> clz) {
+        return ComponentImpl.getBeansClass(clz);
     }
 
     /**
@@ -98,6 +121,7 @@ public class BeanFactory {
      * @param aclass 要创建的class
      */
     public synchronized void newBeanTask(Class<?> aclass) {
+
         if (isBean(aclass) && isScopeSingleton(aclass)) {
             //第一阶段，检测一级缓存中是否已存在当前aclass
             //存在bean
@@ -285,11 +309,51 @@ public class BeanFactory {
      * @return 返回全新的bean
      */
     public Bean createBean(Class<?> aclass) {
-        newBeanTask(aclass);
+        //检测接口的实现
+        Class<?> classt = this.getFieldClass(aclass);
+        logger.info(aclass.getName() + " 替换为 " + classt.getName());
+        newBeanTask(classt);
         boolean fag = true;
         while (fag) {
-            if (isBean(aclass)) fag = false;
+            if (isBean(classt)) fag = false;
         }
-        return getBeanLast(aclass);
+        return getBeanLast(classt);
+    }
+
+    /**
+     * 获得field上的对应资源实例
+     * 对应的资源实例必须有@Component注解
+     *
+     * @param fieldClass 属性字段的class实例
+     * @return 返回对应的资源
+     */
+    public Class<?> getFieldClass(Class<?> fieldClass) {
+        //默认field是一个类
+        Class<?> aclass = fieldClass;
+        //判断field是否是接口
+        if (fieldClass.isInterface()) {
+            //是一个接口，寻找所有的实现类
+            List<Class<?>> classImplList = Reflection.getInterfaceImplClass(fieldClass, false);
+            if (classImplList.isEmpty()) {
+                logger.warn(fieldClass.getName() + " classImplList count is 0");
+                return null;
+            }
+            //过滤cglib代理
+            List<Class<?>> classList = classImplList.stream().filter(cla -> !cla.getName().contains(BeanFactory.CGLIB_TAG)).collect(Collectors.toList());
+            //如果发现多个实现，这里不能进行处理了
+            if (classList != null && classList.size() >= 2) {
+                logger.warn(fieldClass.getName() + " classImplList is not the only");
+                return null;
+            }
+            //找到唯一的实现类
+            assert classList != null;
+            aclass = classList.get(0);
+        }
+        //找到属于@Component的类
+        aclass = getBeansClass(aclass);
+        if (null == aclass) {
+            aclass = fieldClass;
+        }
+        return aclass;
     }
 }

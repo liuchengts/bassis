@@ -1,8 +1,9 @@
 package com.bassis.tools.reflex;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import com.bassis.tools.exception.CustomException;
 
@@ -133,6 +134,45 @@ public class Reflection {
         if (index <= 1) index = 0;
         else index--;
         return (Class<?>) ((ParameterizedType) aclass.getGenericSuperclass()).getActualTypeArguments()[index];
+    }
 
+    /**
+     * 获得一个接口的 所有实现类
+     *
+     * @param aclass     接口实例
+     * @param isAbstract 是否包含抽象类 默认不包含
+     * @return 返回所有的实现类
+     */
+    public static List<Class<?>> getInterfaceImplClass(Class<?> aclass, boolean isAbstract) {
+        List<Class<?>> classList = new ArrayList<>();
+        ClassLoader classLoader = ReflexUtils.getClassLoader();
+        Class<?> classOfClassLoader = classLoader.getClass();
+        while (classOfClassLoader != ClassLoader.class) {
+            classOfClassLoader = classOfClassLoader.getSuperclass();
+        }
+        Field field = null;
+        try {
+            field = classOfClassLoader.getDeclaredField("classes");
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+        field.setAccessible(true);
+        Vector v = null;
+        try {
+            v = (Vector) field.get(classLoader);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        for (Object aV : v) {
+            Class<?> c = (Class<?>) aV;
+            if (aclass.isAssignableFrom(c) && !aclass.equals(c) && isAbstract) {
+                //包含抽象类
+                classList.add(c);
+            } else if (aclass.isAssignableFrom(c) && !aclass.equals(c) && !isAbstract && !Modifier.isAbstract(c.getModifiers())) {
+                //不包含抽象类
+                classList.add(c);
+            }
+        }
+        return classList;
     }
 }

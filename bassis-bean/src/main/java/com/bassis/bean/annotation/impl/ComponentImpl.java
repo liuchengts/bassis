@@ -66,9 +66,8 @@ public class ComponentImpl {
         initializeBean();
     }
 
-
     /**
-     * 根据bean名称获得bean
+     * 根据bean名称获得Class
      *
      * @param name bean别名
      * @return 返回class
@@ -86,7 +85,7 @@ public class ComponentImpl {
     }
 
     /**
-     * 根据bean名称获得bean
+     * 根据beanClass获得Class
      *
      * @param clz bean的class
      * @return 返回class

@@ -9,6 +9,16 @@ import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.bean.test.service.TestService1;
 import com.bassis.bean.test.service.TestService2;
 import com.bassis.bean.test.service.TestService3;
+import com.bassis.bean.test.service.impl.TestService1Impl;
+import com.bassis.bean.test.service.impl.TestService2Impl;
+import com.bassis.bean.test.service.impl.TestService3Impl;
+import com.bassis.tools.reflex.ReflexUtils;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 public class TestMain {
     static BeanFactory beanFactory;
