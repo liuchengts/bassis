@@ -62,6 +62,7 @@ bassis
 * 自定义事件
 * bean工厂
 * 属性循环依赖注入
+* 接口到实现类转换注入
 
 ### bassis_boot
 * main函数启动tomcat
@@ -87,9 +88,9 @@ bassis
 * 无，按需求适当增加
 
 ### bassis_bean
-* @Autowired 需要根据反射实现自动获取注入对象 去掉aclass参数
-* @Aop 需要根据反射实现自动获取注入对象 去掉aclass参数
-* @Scope 需要针对多实例模式下的bean做copy或者重新创建操作
+* @Autowired 需要根据反射实现自动获取注入对象 去掉aclass参数 -- 已完成
+* @Aop 需要根据反射实现自动获取注入对象 去掉aclass参数 -- 已完成
+* @Scope 需要针对多实例模式下的bean做copy或者重新创建操作 -- 已完成
 
 ### bassis_boot
 * 默认基本启动配置 需要支持个性化配置参数
