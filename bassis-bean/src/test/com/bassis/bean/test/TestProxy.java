@@ -10,6 +10,6 @@ public class TestProxy {
     TestComponent testComponent;
 
     public String tp() {
-        return testComponent.tc("test");
+        return testComponent.tc("",null);
     }
 }

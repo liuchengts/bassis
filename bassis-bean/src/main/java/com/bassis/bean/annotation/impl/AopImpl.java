@@ -61,7 +61,14 @@ public class AopImpl {
                 parameters.addAll(Arrays.asList(pAnnotation));
             }
             if (objects.length >= 1) {
-                parameters.addAll(Arrays.asList(objects));
+                //检测参数可用
+                for (Object p : objects) {
+                    if (null == p) {
+                        parameters.add("null");
+                    } else {
+                        parameters.add(p);
+                    }
+                }
             }
             aopParameters = parameters.toArray();
             Set<Method> methods = null;

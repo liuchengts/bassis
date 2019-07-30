@@ -220,6 +220,7 @@ public class ComponentImpl {
      * 初始化bean
      */
     private static void initializeBean() {
+        //开始由 BeanFactory 根据 class创建 bean对象
         beansObject.values().forEach(clz -> {
             beanFactory.newBeanTask(clz);
         });

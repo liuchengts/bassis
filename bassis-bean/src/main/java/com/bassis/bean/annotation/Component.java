@@ -8,5 +8,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Component {
+    /**
+     * bean对象的别名
+     */
     String name() default "";
 }

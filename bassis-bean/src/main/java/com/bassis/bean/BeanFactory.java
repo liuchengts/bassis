@@ -92,10 +92,10 @@ public class BeanFactory {
     }
 
     /**
-     * 创建一个bean
+     * 创建一个bean的task任务
+     * 为了打破循环依赖，这个任务由当前注入对象事件进行监听，等待所有资源初始化完成后进行统一注入
      *
      * @param aclass 要创建的class
-     * @return 返回创建好的bean
      */
     public synchronized void newBeanTask(Class<?> aclass) {
         if (isBean(aclass) && isScopeSingleton(aclass)) {
@@ -276,7 +276,10 @@ public class BeanFactory {
 
     /**
      * 根据一个 aclass 创建一个全新的bean
-     * 注意：如果这个class是单例模式且已存在，会直接返回当前已存在的bean实例
+     * 注意：会更加当前class的@Scope注解进行bean初始化，
+     * 如果@Scope=SINGLETON且已存在，会直接返回当前已存在的bean实例
+     * 只有当@Scope=PROTOTYPE时，才会忽略当前已存在的bean，创建一个全新的bean
+     * 但是当前bean有被其他对象使用的可能性，为了避免此情况，需要增加
      *
      * @param aclass 目标对象
      * @return 返回全新的bean
