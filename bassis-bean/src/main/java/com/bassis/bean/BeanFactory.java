@@ -121,7 +121,6 @@ public class BeanFactory {
      * @param aclass 要创建的class
      */
     public synchronized void newBeanTask(Class<?> aclass) {
-
         if (isBean(aclass) && isScopeSingleton(aclass)) {
             //第一阶段，检测一级缓存中是否已存在当前aclass
             //存在bean
@@ -187,9 +186,11 @@ public class BeanFactory {
      * @return 返回创建的实例列表
      */
     public LinkedList<Bean> getBeanList(Class<?> aclass) {
+        //检测接口的实现
+        Class<?> classt = this.getFieldClass(aclass);
         LinkedList<Bean> beans = new LinkedList<>();
-        if (isBean(aclass)) {
-            beans = objectBeanStorage.get(aclass);
+        if (isBean(classt)) {
+            beans = objectBeanStorage.get(classt);
         }
         return beans;
     }
@@ -218,10 +219,12 @@ public class BeanFactory {
      * @return 返回获得的bean
      */
     public Bean getBeanFirst(Class<?> aclass) {
+        //检测接口的实现
+        Class<?> classt = this.getFieldClass(aclass);
         Bean bean = null;
-        if (isBean(aclass)) {
+        if (isBean(classt)) {
             //存在bean 直接返回第一个bean
-            bean = objectBeanStorage.get(aclass).getFirst();
+            bean = objectBeanStorage.get(classt).getFirst();
         }
         return bean;
     }
@@ -253,10 +256,12 @@ public class BeanFactory {
      * @return 返回获得的bean
      */
     public Bean getBeanLast(Class<?> aclass) {
+        //检测接口的实现
+        Class<?> classt = this.getFieldClass(aclass);
         Bean bean = null;
-        if (isBean(aclass)) {
+        if (isBean(classt)) {
             //存在bean 直接返回第一个bean
-            bean = objectBeanStorage.get(aclass).getLast();
+            bean = objectBeanStorage.get(classt).getLast();
         }
         return bean;
     }
@@ -311,7 +316,6 @@ public class BeanFactory {
     public Bean createBean(Class<?> aclass) {
         //检测接口的实现
         Class<?> classt = this.getFieldClass(aclass);
-        logger.info(aclass.getName() + " 替换为 " + classt.getName());
         newBeanTask(classt);
         boolean fag = true;
         while (fag) {
@@ -353,6 +357,9 @@ public class BeanFactory {
         aclass = getBeansClass(aclass);
         if (null == aclass) {
             aclass = fieldClass;
+        }
+        if (!aclass.equals(fieldClass)) {
+            logger.info(fieldClass.getName() + " 替换为 " + aclass.getName());
         }
         return aclass;
     }
