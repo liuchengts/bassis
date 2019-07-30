@@ -10,7 +10,8 @@ import com.bassis.bean.test.service.TestService3;
 @Scope(value = ScopeEnum.PROTOTYPE)
 @Component
 public class TestService3Impl implements TestService3 {
-    @Autowired(aclass = TestService1Impl.class)
+//    @Autowired(aclass = TestService1Impl.class)
+    @Autowired
     TestService1 testService1;
 
     public String out() {

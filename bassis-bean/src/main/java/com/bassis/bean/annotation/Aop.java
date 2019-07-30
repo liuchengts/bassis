@@ -11,11 +11,13 @@ public @interface Aop {
 
     /**
      * 要执行的aop的对象的别名，对应@Component的name
+     * 与 aclass()二选一
      */
     String value() default "";
 
     /**
      * 要执行的aop的对象的class，对应@Component的class实例
+     * 与 value()二选一
      */
     Class<?> aclass() default Object.class;
 

@@ -7,7 +7,8 @@ import com.bassis.bean.test.service.TestService2;
 
 @Component
 public class TestService1Impl implements TestService1 {
-    @Autowired(aclass = TestService2Impl.class)
+    //    @Autowired(aclass = TestService2Impl.class)
+    @Autowired
     TestService2 testService2;
 
     public String out() {
