@@ -23,7 +23,7 @@ public class TestMain {
     }
 
     private static void testAop() {
-        TestProxy testProxy = (TestProxy) beanFactory.getBeanFirst(TestProxy.class).getObject();
+        TestProxy testProxy = (TestProxy) beanFactory.createBean(TestProxy.class).getObject();
         String res = testProxy.tp();
         System.out.println(res);
     }
@@ -36,19 +36,22 @@ public class TestMain {
     }
 
     private static void testForAutowired() {
-        TestService1 service1 = (TestService1) beanFactory.getBeanFirst(TestService1.class).getObject();
+        TestService1 service1 = (TestService1) beanFactory.createBean(TestService1.class).getObject();
         service1.out();
-        TestService2 service2 = (TestService2) beanFactory.getBeanFirst(TestService2.class).getObject();
+        TestService2 service2 = (TestService2) beanFactory.createBean(TestService2.class).getObject();
         service2.out();
-        TestService3 service3 = (TestService3) beanFactory.getBeanFirst(TestService3.class).getObject();
-        service3.out();
+        TestService3 service3 = (TestService3) beanFactory.createBean(TestService3.class).getObject();
+        service3.out2();
 
         System.out.println(beanFactory.getBeanList(TestService1.class).size());
         System.out.println(beanFactory.getBeanList(TestService2.class).size());
         System.out.println(beanFactory.getBeanList(TestService3.class).size());
         //TestService3 是多实例模式，所以在这里打印其object地址
         beanFactory.getBeanList(TestService3.class).forEach(bean -> {
-            System.out.println(bean.getObject().toString());
+            System.out.println("bean:" + bean.getObject().toString());
+            System.out.println("bean:" + bean.getIndex());
+            System.out.println("bean:" + bean.getCv());
+            System.out.println("bean:" + bean.getOv());
         });
 
     }

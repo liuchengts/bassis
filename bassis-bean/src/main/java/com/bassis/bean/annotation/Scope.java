@@ -6,7 +6,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * 自定义注入资源注解
+ * bean生成范围
+ * 单例模式
+ * 多例模式 BeanFactory.createBean()下每次都会生成一个新的bean对象
  *
  * @see ScopeEnum
  */

@@ -110,7 +110,7 @@ public class BeanFactory {
             singletonFactories.remove(aclass);
         } else {
             //创建一个待初始化的bean放入二级缓存
-            Bean bean = new Bean(ProxyFactory.invoke(aclass), 1);
+            Bean bean = new Bean(ProxyFactory.invoke(aclass));
             singletonFactories.put(aclass, bean);
             //检测资源注入,并且加入事件
             AutowiredImpl autowired = new AutowiredImpl();
