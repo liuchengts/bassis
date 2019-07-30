@@ -4,6 +4,7 @@ import com.bassis.tools.reflex.Reflection;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public class ApplicationEventPublisher {
 
@@ -18,7 +19,7 @@ public class ApplicationEventPublisher {
         return ApplicationEventPublisher.LazyHolder.INSTANCE;
     }
 
-    private final static Map<Class<?>, Set<ApplicationListener>> listeners = new ConcurrentHashMap<>();
+    private final static Map<Class<?>, CopyOnWriteArraySet<ApplicationListener>> listeners = new ConcurrentHashMap<>(5);
 
     /**
      * 添加事件
@@ -27,7 +28,7 @@ public class ApplicationEventPublisher {
      */
     public static synchronized void addListener(ApplicationListener listener) {
         Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
-        Set<ApplicationListener> listenerSet = new HashSet<>();
+        CopyOnWriteArraySet<ApplicationListener> listenerSet = new CopyOnWriteArraySet<>();
         if (listeners.containsKey(aclass)) {
             listenerSet = listeners.get(aclass);
         }
@@ -43,7 +44,7 @@ public class ApplicationEventPublisher {
     public static synchronized void removeListener(ApplicationListener listener) {
         Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
         if (!listeners.containsKey(aclass)) return;
-        Set<ApplicationListener> listenerSet = listeners.get(aclass);
+        CopyOnWriteArraySet<ApplicationListener> listenerSet = new CopyOnWriteArraySet<>();
         if (!listenerSet.contains(listener)) return;
         listenerSet.remove(listener);
         if (listenerSet.isEmpty()) {
@@ -61,14 +62,14 @@ public class ApplicationEventPublisher {
     public static void publishEvent(ApplicationEvent event) {
         Class<?> aclass = event.getClass();
         if (!listeners.containsKey(aclass)) return;
-        Set<ApplicationListener> listenerSet = listeners.get(aclass);
+        CopyOnWriteArraySet<ApplicationListener> listenerSet = listeners.get(aclass);
         notifyListeners(listenerSet, event);
     }
 
     /**
      * 通知所有的Listener
      */
-    private static void notifyListeners(Set<ApplicationListener> listenerSet, ApplicationEvent event) {
+    private static void notifyListeners(CopyOnWriteArraySet<ApplicationListener> listenerSet, ApplicationEvent event) {
         listenerSet.forEach(listener -> {
             listener.onApplicationEvent(event);
         });

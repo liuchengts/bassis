@@ -46,6 +46,10 @@ public class TestMain {
         System.out.println(beanFactory.getBeanList(TestService1.class).size());
         System.out.println(beanFactory.getBeanList(TestService2.class).size());
         System.out.println(beanFactory.getBeanList(TestService3.class).size());
+        //TestService3 是多实例模式，所以在这里打印其object地址
+        beanFactory.getBeanList(TestService3.class).forEach(bean -> {
+            System.out.println(bean.getObject().toString());
+        });
 
     }
 

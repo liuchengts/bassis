@@ -147,11 +147,4 @@ public class ControllerImpl {
         }
         mapMethod.put(path, map);
     }
-
-    /**
-     * 动态调用 autowired 进行注入，这个过程应该在寻址完成之后进行
-     */
-    public static void autowired(Object object) {
-        AutowiredImpl.analyseFields(object, true);
-    }
 }

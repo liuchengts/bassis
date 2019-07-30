@@ -14,10 +14,9 @@ import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 对当前所有资源的自动注入进行实现
@@ -25,9 +24,9 @@ import java.util.Set;
  * @see Autowired
  */
 public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
-    private static Logger logger = Logger.getLogger(AutowiredImpl.class);
-    private static BeanFactory beanFactory = BeanFactory.getInstance();
-    private static Set<FieldBean> fieldBeans = new HashSet<>();
+    private final static Logger logger = Logger.getLogger(AutowiredImpl.class);
+    private final BeanFactory beanFactory = BeanFactory.getInstance();
+    private final List<FieldBean> fieldBeans = new LinkedList<>();
 
     /**
      * 全局字段注解分析
@@ -84,7 +83,6 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
                 //是基础类型的包装类型
                 fieldClass = field.getType().getClass();
             }  //基本数据类型
-
             if (null != fieldClass) {
                 fieldBeans.add(new FieldBean(obj, field, fieldClass));
                 beanFactory.newBeanTask(fieldClass);
@@ -99,8 +97,8 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
      * 执行注入
      */
     private void twoStageAutowired() {
-        fieldBeans.forEach(this::fieldBeanAutowired);
-        fieldBeans.clear();
+        this.fieldBeans.forEach(this::fieldBeanAutowired);
+        this.fieldBeans.clear();
     }
 
     /**
@@ -110,15 +108,7 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
      */
     private void fieldBeanAutowired(FieldBean fieldBean) {
         String position = "[twoStageAutowired] bean: " + fieldBean.getObject().getClass().getName() + "field:" + fieldBean.getField().getName();
-        Bean bean = null;
-        boolean singleton = BeanFactory.isScopeSingleton(fieldBean.getFieldClass());
-        if (!singleton) {
-            //多实例
-            bean = beanFactory.getByLastBean(fieldBean.getFieldClass());
-        } else {
-            //单实例
-            bean = beanFactory.getBeanFirst(fieldBean.getFieldClass());
-        }
+        Bean bean = beanFactory.createBean(fieldBean.getFieldClass());
         if (null == bean) {
             CustomException.throwOut(position + " @Autowired not resource bean");
         }
@@ -136,7 +126,7 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
     }
 
     @Override
-    public void onApplicationEvent(AutowiredEvent var1) {
-        twoStageAutowired();
+    public void onApplicationEvent(AutowiredEvent event) {
+        this.twoStageAutowired();
     }
 }

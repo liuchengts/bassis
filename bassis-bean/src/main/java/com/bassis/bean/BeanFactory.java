@@ -98,7 +98,7 @@ public class BeanFactory {
      * @return 返回创建好的bean
      */
     public synchronized void newBeanTask(Class<?> aclass) {
-        if (isBean(aclass)) {
+        if (isBean(aclass) && isScopeSingleton(aclass)) {
             //第一阶段，检测一级缓存中是否已存在当前aclass
             //存在bean
         } else if (singletonFactories.containsKey(aclass)) {
@@ -218,8 +218,8 @@ public class BeanFactory {
      * @param name 要获得的实例
      * @return 返回获得的bean
      */
-    public Bean getByLastBean(String name) {
-        return getByLastBean(ComponentImpl.getBeansClass(name));
+    public Bean getBeanLast(String name) {
+        return getBeanLast(ComponentImpl.getBeansClass(name));
     }
 
     /**
@@ -228,7 +228,7 @@ public class BeanFactory {
      * @param aclass 要获得的实例
      * @return 返回获得的bean
      */
-    public Bean getByLastBean(Class<?> aclass) {
+    public Bean getBeanLast(Class<?> aclass) {
         Bean bean = null;
         if (isBean(aclass)) {
             //存在bean 直接返回第一个bean
@@ -270,8 +270,23 @@ public class BeanFactory {
      * @param target 目标对象
      */
     public void copyBean(Object source, Object target) {
-        boolean sourceSuperClass = source.getClass().getName().contains(CGLIB_TAG);
-        boolean targetSuperClass = target.getClass().getName().contains(CGLIB_TAG);
-        CachedBeanCopier.copy(source, target, sourceSuperClass, targetSuperClass);
+        CachedBeanCopier.copy(source, target, source.getClass().getName().contains(CGLIB_TAG),
+                target.getClass().getName().contains(CGLIB_TAG));
+    }
+
+    /**
+     * 根据一个 aclass 创建一个全新的bean
+     * 注意：如果这个class是单例模式且已存在，会直接返回当前已存在的bean实例
+     *
+     * @param aclass 目标对象
+     * @return 返回全新的bean
+     */
+    public Bean createBean(Class<?> aclass) {
+        newBeanTask(aclass);
+        boolean fag = true;
+        while (fag) {
+            if (isBean(aclass)) fag = false;
+        }
+        return getBeanLast(aclass);
     }
 }
