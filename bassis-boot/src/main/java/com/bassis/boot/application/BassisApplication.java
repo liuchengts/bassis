@@ -1,8 +1,11 @@
 package com.bassis.boot.application;
 
 
+import com.bassis.bean.BeanFactory;
 import com.bassis.boot.web.filter.CharacterEncodingFilter;
 import com.bassis.boot.web.filter.RootFilter;
+import com.bassis.tools.properties.FileProperties;
+import com.bassis.tools.reflex.ReflexUtils;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
@@ -20,6 +23,7 @@ import org.apache.log4j.Logger;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,34 +45,60 @@ public class BassisApplication {
         appApplicationConfig = new ApplicationConfig();
     }
 
-    private static void autoConfig(Class cla) {
-        //调用自动配置
-        appApplicationConfig.rootClass(cla, BassisApplication.class);
-    }
-
-    public static void run(Class cla, String[] args) {
-        autoConfig(cla);
+    /**
+     * 带参数启动
+     * 优先以 application.properties文件配置为准
+     *
+     * @param aClass 调起BassisApplication的类实例
+     * @param args   参数（暂时忽略当前参数）
+     */
+    public static void run(Class aClass, String[] args) {
+        appApplicationConfig.rootClass(aClass, BassisApplication.class);
+        appApplicationConfig = AutoConfig.readProperties(appApplicationConfig);
         start();
     }
 
-    public static void run(Class cla, String[] args, int port) {
+    /**
+     * 带参数和端口启动
+     * 优先以 application.properties文件配置为准
+     *
+     * @param aClass 调起BassisApplication的类实例
+     * @param args   参数（暂时忽略当前参数）
+     * @param port   tomcat启动端口
+     */
+    public static void run(Class aClass, String[] args, int port) {
         appApplicationConfig.setPort(port);
-        run(cla, args);
+        run(aClass, args);
     }
 
+    /**
+     * 带参数和容器配置启动
+     * 会忽略当前 application.properties 所有配置
+     *
+     * @param args   参数（暂时忽略当前参数）
+     * @param config 配置
+     */
     public static void run(String[] args, ApplicationConfig config) {
         appApplicationConfig = config;
         start();
     }
 
+    /**
+     * 停止tomcat
+     */
     public static void stop() {
         down();
     }
 
     /**
-     * 启动
+     * 启动 tomcat
      */
-    protected static void start() {
+    private static void start() {
+        //启动 BeanFactory
+        logger.info("BeanFactory start...");
+        BeanFactory.startBeanFactory(appApplicationConfig.getScanRoot());
+        //启动 tomcat
+        logger.info("Tomcat start...");
         connector = tomcat.getConnector();
         connector.setPort(appApplicationConfig.getPort());
         connector.setURIEncoding(Declaration.encoding);
@@ -85,7 +115,7 @@ public class BassisApplication {
         addFilter(new RootFilter(), "RootFilter", "/", "/*");
         try {
             tomcat.start();
-            logger.info("Tomcat " + appApplicationConfig.getServletName() + " started success !");
+            logger.info("Tomcat " + appApplicationConfig.getServletName() + " started success ,port:" + appApplicationConfig.getPort());
             tomcat.getServer().await();
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -144,7 +174,7 @@ public class BassisApplication {
     /**
      * 停止
      */
-    protected static void down() {
+    private static void down() {
         try {
             tomcat.stop();
             logger.info("Tomcat " + appApplicationConfig.getServletName() + " stoped !");
@@ -153,4 +183,6 @@ public class BassisApplication {
             logger.error(e.getMessage());
         }
     }
+
+
 }

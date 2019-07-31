@@ -28,8 +28,8 @@ public class BassisServlet extends HttpServlet {
     private static Logger logger = Logger.getLogger(BassisServlet.class);
     static ServletConfig servletConfig;
     static ServletContext servletContext;
-    static FileProperties properties;
-    static BeanFactory beanFactory;
+    final static FileProperties properties = FileProperties.getInstance();
+    final static BeanFactory beanFactory = BeanFactory.getInstance();
     static Map<String, Class<?>> mapActions = new HashMap<>();
     static Map<String, Method> mapMethods = new HashMap<>();
 
@@ -39,17 +39,10 @@ public class BassisServlet extends HttpServlet {
         servletConfig = config;
         // 获得上下文
         servletContext = config.getServletContext();
-        //初始化配置文件读取器
-        properties = FileProperties.getInstance();
-        //启动扫描器
+        //获得servlet启动参数
         String scanRoot = servletConfig.getInitParameter(Declaration.scanRoot);
-        if (StringUtils.isEmptyString(scanRoot)) {
-            CustomException.throwOut("init servlet failure : parameter [ " + Declaration.scanRoot
-                    + " ] not allowed");
-            return;
-        }
-        // 启动 beanFactory
-        beanFactory = BeanFactory.startBeanFactory(scanRoot);
+        //开始初始化Controller寻址
+
     }
 
     protected void service(HttpServletRequest request, HttpServletResponse response)
