@@ -1,14 +1,9 @@
 package com.bassis.tools.properties;
 
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.reflex.ReflexUtils;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -84,12 +79,24 @@ public class FileProperties extends Properties {
     public synchronized void read(String path) {
         try {
             InputStream is = this.getClass().getResourceAsStream(path);
+            if (null == is) {
+                is = new FileInputStream(new File(path));
+            }
             this.load(is);
         } catch (FileNotFoundException e) {
             CustomException.throwOut("指定文件不存在", e);
         } catch (IOException e) {
             CustomException.throwOut("文件读取IO异常", e);
         }
+        mapProperties(path);
+    }
+
+    /**
+     * 存储
+     *
+     * @param path 文件路径
+     */
+    private void mapProperties(String path) {
         try {
             String key = "", value = "";
             String str = "properties";

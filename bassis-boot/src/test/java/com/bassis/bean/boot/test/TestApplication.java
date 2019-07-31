@@ -1,4 +1,4 @@
-package com.bassis.bean.boot;
+package com.bassis.bean.boot.test;
 
 import com.bassis.boot.application.BassisApplication;
 

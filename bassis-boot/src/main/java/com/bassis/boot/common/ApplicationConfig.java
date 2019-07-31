@@ -27,7 +27,7 @@ public class ApplicationConfig implements Serializable {
     /**
      * 请求路径后缀 默认
      */
-    String urlPattern = "/";
+    String urlPattern = "";
 
 
     //######自动配置参数
@@ -90,10 +90,10 @@ public class ApplicationConfig implements Serializable {
         this.contextPath = contextPath;
     }
 
-    public void rootClass(Class aClass, Class bassisCla) {
+    public void rootClass(Class aClass) {
         this.scanRoot = aClass.getPackage().getName();
         this.aClass = aClass;
-        this.servletName = bassisCla.getSimpleName();
+        this.servletName = aClass.getSimpleName();
     }
 
 

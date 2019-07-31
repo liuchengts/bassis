@@ -53,7 +53,7 @@ public class BassisApplication {
      * @param args   参数（暂时忽略当前参数）
      */
     public static void run(Class aClass, String[] args) {
-        appApplicationConfig.rootClass(aClass, BassisApplication.class);
+        appApplicationConfig.rootClass(aClass);
         appApplicationConfig = AutoConfig.readProperties(appApplicationConfig);
         start();
     }
@@ -115,7 +115,9 @@ public class BassisApplication {
         addFilter(new RootFilter(), "RootFilter", "/", "/*");
         try {
             tomcat.start();
-            logger.info("Tomcat " + appApplicationConfig.getServletName() + " started success ,port:" + appApplicationConfig.getPort());
+
+            logger.info("Tomcat :[" + appApplicationConfig.getServletName() + "] port:[" + appApplicationConfig.getPort() + "] started success");
+            logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath() + "] urlPattern:[" + appApplicationConfig.getUrlPattern() + "]");
             tomcat.getServer().await();
         } catch (Exception e) {
             logger.error(e.getMessage());

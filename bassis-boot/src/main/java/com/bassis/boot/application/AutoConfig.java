@@ -3,10 +3,12 @@ package com.bassis.boot.application;
 import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
 import com.bassis.tools.properties.FileProperties;
+import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
+import java.util.Objects;
 
 /**
  * 自动配置
@@ -28,12 +30,11 @@ public class AutoConfig {
      * @return 返回读取完成的配置
      */
     protected static ApplicationConfig readProperties(ApplicationConfig appApplicationConfig) {
-        //初始化默认配置
-        //扫描获得
-//        appApplicationConfig.rootClass(aclass, BassisApplication.class);
+        String filePath = Objects.requireNonNull(ReflexUtils.getClassLoader().getResource(Declaration.config_file_name)).getFile();
+        logger.debug(filePath);
         try {
             //读取配置文件
-            properties.read(Declaration.resources_path + File.separator + Declaration.config_file_name);
+            properties.read(filePath);
             String port = FileProperties.getPropertiesFlesh(Declaration.bassis_server_port);
             if (!StringUtils.isEmptyString(port)) appApplicationConfig.setPort(Integer.valueOf(port));
 
