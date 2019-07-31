@@ -110,14 +110,13 @@ public class BassisApplication {
         //加入bassisServlet,设置启动顺序为1
         addServlet(bassisServlet, appApplicationConfig.getServletName(), appApplicationConfig.getUrlPattern(), 1, initBassisServletParameters());
         //加入编码拦截器
-        addFilter(new CharacterEncodingFilter(), "CharacterEncodingFilte", "/", "/*");
+        addFilter(new CharacterEncodingFilter(), CharacterEncodingFilter.class.getSimpleName(), "/", "/*");
         //加入请求root拦截器
-        addFilter(new RootFilter(), "RootFilter", "/", "/*");
+        addFilter(new RootFilter(), RootFilter.class.getSimpleName(), "/", "/*");
         try {
             tomcat.start();
-
             logger.info("Tomcat :[" + appApplicationConfig.getServletName() + "] port:[" + appApplicationConfig.getPort() + "] started success");
-            logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath() + "] urlPattern:[" + appApplicationConfig.getUrlPattern() + "]");
+            logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath()+ "]");
             tomcat.getServer().await();
         } catch (Exception e) {
             logger.error(e.getMessage());
