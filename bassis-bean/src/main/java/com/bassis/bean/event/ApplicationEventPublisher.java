@@ -69,9 +69,8 @@ public class ApplicationEventPublisher {
     /**
      * 通知所有的Listener
      */
+    @SuppressWarnings("all")
     private static void notifyListeners(CopyOnWriteArraySet<ApplicationListener> listenerSet, ApplicationEvent event) {
-        listenerSet.forEach(listener -> {
-            listener.onApplicationEvent(event);
-        });
+        listenerSet.forEach(listener -> listener.onApplicationEvent(event));
     }
 }

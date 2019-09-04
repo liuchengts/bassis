@@ -4,9 +4,10 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.bassis.bean.Scanner;
-import com.bassis.bean.annotation.impl.AutowiredImpl;
+import com.bassis.tools.exception.CustomException;
 import org.apache.log4j.Logger;
 
 import com.bassis.tools.string.StringUtils;
@@ -33,18 +34,18 @@ public class ControllerImpl {
     private static Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
 
     // 包请求注解路径/包路径
-    private static Map<String, Class<?>> mapClass;
+    private static Map<String, Class<?>> mapClass = new ConcurrentHashMap<>();
     // 包请求注解路径 、 方法注解路径/方法名称
-    private static Map<String, Map<String, Method>> mapMethod;
+    private static Map<String, Map<String, Method>> mapMethod = new ConcurrentHashMap<>();
 
     // 只处理当前实现类的注解
     static {
         logger.debug("@Controller分析开始");
-        mapClass = new HashMap<>();
-        mapMethod = new HashMap<>();
         for (Class<?> clz : scanPackageList) {
-            if (clz.isAnnotationPresent(Controller.class)) {
-                analyse(clz);
+            try {
+                if (clz.isAnnotationPresent(Controller.class)) analyse(clz);
+            } catch (Exception e) {
+                CustomException.throwOut("@Controller分析异常：", e);
             }
         }
     }
@@ -74,7 +75,7 @@ public class ControllerImpl {
     /**
      * 处理 Controller注解 与 RequestMapping注解
      *
-     * @param clz
+     * @param clz 带有@Controller的类
      */
     private static void analyse(Class<?> clz) {
         logger.debug(clz.getName());
@@ -114,8 +115,8 @@ public class ControllerImpl {
     /**
      * 方法注解分析
      *
-     * @param path
-     * @param clz
+     * @param path 路径
+     * @param clz  带有@RequestMapping的类
      */
     private static void analyseMethods(String path, Class<?> clz) {
         // 分析方法

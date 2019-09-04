@@ -28,7 +28,10 @@ public class ApplicationConfig implements Serializable {
      * 请求路径后缀 默认
      */
     String urlPattern = "";
-
+    /**
+     * 请求系统服务路径后缀 默认
+     */
+    String urlSysPattern = "/system";
 
     //######自动配置参数
     //自动生成
@@ -88,6 +91,14 @@ public class ApplicationConfig implements Serializable {
 
     public void setContextPath(String contextPath) {
         this.contextPath = contextPath;
+    }
+
+    public String getUrlSysPattern() {
+        return urlSysPattern;
+    }
+
+    public void setUrlSysPattern(String urlSysPattern) {
+        this.urlSysPattern = urlSysPattern;
     }
 
     public void rootClass(Class aClass) {

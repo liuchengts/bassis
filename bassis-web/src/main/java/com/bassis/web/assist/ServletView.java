@@ -144,7 +144,7 @@ public class ServletView implements Serializable {
 	 */
 	public void viewConfig() {
 		this.getResponse().setCharacterEncoding("utf-8");
-        this.getResponse().setContentType("application/json; charset=utf-8");
+        this.getResponse().setContentType("com.lc.grpc.service.application/json; charset=utf-8");
 	}
 
 
