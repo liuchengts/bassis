@@ -12,6 +12,7 @@ import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.AprLifecycleListener;
+import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.log4j.Logger;
@@ -40,7 +41,7 @@ public class TomcatUtil {
     }
 
     private static MainArgs mainArgs = MainArgs.getInstance();
-    private Context context;
+    private StandardContext context;
     private ApplicationConfig appApplicationConfig;
     private Tomcat tomcat = new Tomcat();
     private Connector connector;
@@ -48,24 +49,36 @@ public class TomcatUtil {
 
     /**
      * 启动 tomcat
+     *
      * @param appApplicationConfig 启动配置
      */
     protected void start(ApplicationConfig appApplicationConfig) {
         this.appApplicationConfig = appApplicationConfig;
-        defaultConfig(mainArgs.getArgs());
-        //启动 tomcat
-        logger.debug("Tomcat start...");
+        //设置tomcat
+        tomcat.setBaseDir(System.getProperty("user.dir"));
+        tomcat.setPort(appApplicationConfig.getPort());
+        tomcat.getHost().setAutoDeploy(false);
+        //设置编码
         connector = tomcat.getConnector();
-        connector.setPort(appApplicationConfig.getPort());
         connector.setURIEncoding(Declaration.encoding);
+        tomcat.setConnector(connector);
+        //设置上下文
+        context = new StandardContext();
+        context.setPath(appApplicationConfig.getContextPath());
+        context.addLifecycleListener(new Tomcat.FixContextListener());
+        tomcat.getHost().addChild(context);
+        //设置tomcat服务
         StandardServer server = (StandardServer) tomcat.getServer();
         AprLifecycleListener listener = new AprLifecycleListener();
         server.addLifecycleListener(listener);
         try {
+            defaultConfig(mainArgs.getArgs());
+            //启动 tomcat
+            logger.debug("Tomcat start...");
             tomcat.start();
             logger.info("Tomcat :[" + appApplicationConfig.getServletName() + "] port:[" + appApplicationConfig.getPort() + "] started success");
             logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath() + "]");
-            tomcat.getServer().await();
+            server.await();
         } catch (Exception e) {
             CustomException.throwOut(" start [" + Declaration.startSchemaWeb + "] error ", e);
         }
@@ -76,11 +89,10 @@ public class TomcatUtil {
      */
     private void defaultConfig(String[] args) {
         //设置上下文
-        context = tomcat.addContext(appApplicationConfig.getContextPath(), null);
         Map<String, String> servletParameters = initBassisServletParameters();
         if (args != null) servletParameters.put(Declaration.mainArgs, Arrays.toString(args));
         //加入bassisServlet,设置启动顺序为1
-        addServlet(bassisServlet, appApplicationConfig.getServletName(), appApplicationConfig.getUrlSysPattern(), 1, servletParameters);
+        addServlet(bassisServlet, appApplicationConfig.getServletName(), 1, servletParameters);
         //加入编码拦截器
         addFilter(new CharacterEncodingFilter(), CharacterEncodingFilter.class.getSimpleName(), "/", "/*");
         //加入请求root拦截器
@@ -122,7 +134,7 @@ public class TomcatUtil {
      * @param loadOnStartup 启动顺序 默认为null
      */
     public void addServlet(Servlet objServlet, String servletName, int loadOnStartup) {
-        addServlet(objServlet, servletName, appApplicationConfig.getUrlPattern(), loadOnStartup, null);
+        addServlet(objServlet, servletName, loadOnStartup, null);
     }
 
     /**
@@ -130,15 +142,14 @@ public class TomcatUtil {
      *
      * @param objServlet    Servlet实例
      * @param servletName   Servlet名称
-     * @param urlPattern    请求的url配置
      * @param loadOnStartup 启动顺序 默认为0
      */
-    public void addServlet(Servlet objServlet, String servletName, String urlPattern, int loadOnStartup, Map<String, String> initParameters) {
-        Wrapper wrapper = Tomcat.addServlet(context, servletName, objServlet);
+    public void addServlet(Servlet objServlet, String servletName, int loadOnStartup, Map<String, String> initParameters) {
+        Wrapper wrapper = tomcat.addServlet(context.getPath(), servletName, objServlet);
         //启动顺序
         wrapper.setLoadOnStartup(loadOnStartup);
         initParameters.forEach(wrapper::addInitParameter);
-        context.addServletMappingDecoded(urlPattern, servletName);
+        context.addServletMappingDecoded("/", servletName);
     }
 
     /**

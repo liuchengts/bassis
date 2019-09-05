@@ -4,6 +4,9 @@ import com.bassis.bean.event.ApplicationEvent;
 
 import java.util.Map;
 
+/**
+ * 在tomcat启动前 增加 tomcat的 servlet 与 filter 事件通知
+ */
 public class ApplicationConfigEvent extends ApplicationEvent {
     public final static int servlet = 1;
     public final static int filter = 2;

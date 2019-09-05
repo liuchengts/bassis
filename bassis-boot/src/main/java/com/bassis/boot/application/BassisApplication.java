@@ -36,7 +36,7 @@ public class BassisApplication {
 
     /**
      * 带参数和端口启动
-     * 优先以 properties文件配置为准
+     * 优先以 com.lc.grpc.service.application.properties文件配置为准
      *
      * @param aClass 调起BassisApplication的类实例
      * @param args   参数（暂时忽略当前参数）

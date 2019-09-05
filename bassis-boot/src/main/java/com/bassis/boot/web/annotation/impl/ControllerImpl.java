@@ -141,7 +141,7 @@ public class ControllerImpl {
                 map.put(_path, method);
                 logger.debug("原本重复method_path :" + method_path + "|更改为 _path：" + _path);
             } else {
-                logger.debug("path:" + path);
+                logger.debug("method_path:" + method_path);
                 map.put(method_path, method);
             }
         }

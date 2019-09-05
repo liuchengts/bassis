@@ -1,12 +1,13 @@
-package com.bassis.boot.event;
+package com.bassis.boot.event.listener;
 
 import com.bassis.bean.event.ApplicationListener;
 import com.bassis.boot.application.TomcatUtil;
+import com.bassis.boot.event.ApplicationConfigEvent;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
 
-public class ApplicationConfigListener implements ApplicationListener<ApplicationConfigEvent> {
+public class ApplicationConfigEventListener implements ApplicationListener<ApplicationConfigEvent> {
     TomcatUtil tomcatUtil = TomcatUtil.getInstance();
 
     @Override
