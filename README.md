@@ -16,6 +16,9 @@ bassis
 * bassis_hibernate  基于hibernate5.2进行封装，支持多数据源切换
 * bassis_jdbc  后续会进行此项目开发
 
+# 特别说明
+* 计划将 bassis_web 移除，其web功能重写至 bassis_boot ，同时提供 精简内核方式与tomcat方式启动框架，以适应不同场景需求。
+
 ## 注意
 
 本框架为手写框架,基于jdk8开发与编译，在低于此版本的jre上运行可能会出现异常。
@@ -110,3 +113,4 @@ bassis
 
 ### bassis_rpc
 * 需要增加rpc功能支持
+
