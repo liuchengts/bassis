@@ -26,10 +26,12 @@ public class AutoConfig {
     /**
      * 读取配置
      *
+     * @param aClass               启动类
      * @param appApplicationConfig 配置
      * @return 返回读取完成的配置
      */
-    protected static ApplicationConfig readProperties(ApplicationConfig appApplicationConfig) {
+    protected static ApplicationConfig readProperties(Class aClass, ApplicationConfig appApplicationConfig) {
+        if (null != aClass) appApplicationConfig.rootClass(aClass);
         String filePath = Objects.requireNonNull(ReflexUtils.getClassLoader().getResource(Declaration.config_file_name)).getFile();
         logger.debug(filePath);
         try {
@@ -49,6 +51,9 @@ public class AutoConfig {
 
             String servletName = FileProperties.getPropertiesFlesh(Declaration.bassis_server_name);
             if (!StringUtils.isEmptyString(servletName)) appApplicationConfig.setServletName(servletName);
+
+            String startSchema = FileProperties.getPropertiesFlesh(Declaration.bassis_start_schema);
+            if (!StringUtils.isEmptyString(startSchema)) appApplicationConfig.setStartSchema(startSchema);
 
         } catch (Exception e) {
             logger.error(Declaration.config_file_name + " 配置无法读取,将由默认配置启动", e);

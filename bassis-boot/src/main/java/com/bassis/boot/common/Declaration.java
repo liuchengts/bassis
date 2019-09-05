@@ -18,6 +18,26 @@ public interface Declaration {
     String encoding = "UTF-8";
 
     /**
+     * 启动模式-web
+     */
+    String startSchemaWeb = "web";
+
+    /**
+     * 启动模式-core
+     */
+    String startSchemaCore = "core";
+
+    /**
+     * 启动模式-rpc
+     */
+    String startSchemaRpc = "rpc";
+
+    /**
+     * 启动模式-All
+     */
+    String startSchemaAll = "all";
+
+    /**
      * 配置文件名称
      */
     String config_file_name = "application.properties";
@@ -57,5 +77,10 @@ public interface Declaration {
      */
     String bassis_scan_root = "bassis.scan.root";
 
+    /**
+     * 启动模式
+     * bassis.start.schema
+     */
+    String bassis_start_schema = "bassis.start.schema";
 
 }
