@@ -7,7 +7,6 @@ import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.util.Objects;
 
 /**
@@ -16,12 +15,7 @@ import java.util.Objects;
 public class AutoConfig {
     private static final long serialVersionUID = 1L;
     final static Logger logger = Logger.getLogger(AutoConfig.class);
-    static FileProperties properties;
-
-    static {
-        properties = FileProperties.getInstance();
-
-    }
+    static FileProperties properties = FileProperties.getInstance();
 
     /**
      * 读取配置

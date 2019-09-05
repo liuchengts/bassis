@@ -35,7 +35,7 @@ public class BassisServlet extends HttpServlet {
 
 
     public void init(ServletConfig config) {
-        logger.debug("初始化" + this.getClass().getName());
+        logger.debug("初始化 " + this.getClass().getName());
         servletConfig = config;
         // 获得上下文
         servletContext = config.getServletContext();

@@ -5,6 +5,7 @@ import com.bassis.bean.BeanFactory;
 import com.bassis.boot.common.Declaration;
 import com.bassis.boot.common.ApplicationConfig;
 
+import com.bassis.boot.common.MainArgs;
 import com.bassis.tools.exception.CustomException;
 import org.apache.log4j.Logger;
 
@@ -17,25 +18,25 @@ public class BassisApplication {
     static final Logger logger = Logger.getLogger(BassisApplication.class);
     private static ApplicationConfig appApplicationConfig = new ApplicationConfig();
     private static TomcatUtil tomcatUtil = TomcatUtil.getInstance();
-    private static MainArgsUtil mainArgsUtil = MainArgsUtil.getInstance();
+    private static MainArgs mainArgs = MainArgs.getInstance();
     private static boolean startSchemaCoreFag = true;
 
     /**
      * 带参数启动
-     * 优先以 com.lc.grpc.service.application.properties文件配置为准
+     * 优先以 properties文件配置为准
      *
      * @param aClass 调起BassisApplication的类实例
      * @param args   参数（暂时忽略当前参数）
      */
     public static void run(Class aClass, String[] args) {
         appApplicationConfig = AutoConfig.readProperties(aClass, appApplicationConfig);
-        mainArgsUtil.setArgs(args);
+        mainArgs.setArgs(args);
         start();
     }
 
     /**
      * 带参数和端口启动
-     * 优先以 com.lc.grpc.service.application.properties文件配置为准
+     * 优先以 properties文件配置为准
      *
      * @param aClass 调起BassisApplication的类实例
      * @param args   参数（暂时忽略当前参数）

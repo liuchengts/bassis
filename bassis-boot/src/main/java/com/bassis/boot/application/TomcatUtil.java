@@ -1,8 +1,8 @@
 package com.bassis.boot.application;
 
-import com.bassis.bean.BeanFactory;
 import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
+import com.bassis.boot.common.MainArgs;
 import com.bassis.boot.container.BassisServlet;
 import com.bassis.boot.web.filter.CharacterEncodingFilter;
 import com.bassis.boot.web.filter.RootFilter;
@@ -39,7 +39,7 @@ public class TomcatUtil {
         return TomcatUtil.LazyHolder.INSTANCE;
     }
 
-    private static MainArgsUtil mainArgsUtil = MainArgsUtil.getInstance();
+    private static MainArgs mainArgs = MainArgs.getInstance();
     private Context context;
     private ApplicationConfig appApplicationConfig;
     private Tomcat tomcat = new Tomcat();
@@ -52,7 +52,7 @@ public class TomcatUtil {
      */
     protected void start(ApplicationConfig appApplicationConfig) {
         this.appApplicationConfig = appApplicationConfig;
-        defaultConfig(mainArgsUtil.getArgs());
+        defaultConfig(mainArgs.getArgs());
         //启动 tomcat
         logger.debug("Tomcat start...");
         connector = tomcat.getConnector();
