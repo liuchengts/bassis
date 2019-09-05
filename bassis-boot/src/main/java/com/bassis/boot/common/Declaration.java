@@ -16,7 +16,10 @@ public interface Declaration {
      * 编码
      */
     String encoding = "UTF-8";
-
+    /**
+     * 启动函数参数
+     */
+    String mainArgs = "mainArgs";
     /**
      * 启动模式-web
      */

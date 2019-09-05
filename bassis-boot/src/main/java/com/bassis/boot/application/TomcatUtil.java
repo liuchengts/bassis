@@ -6,6 +6,7 @@ import com.bassis.boot.common.Declaration;
 import com.bassis.boot.container.BassisServlet;
 import com.bassis.boot.web.filter.CharacterEncodingFilter;
 import com.bassis.boot.web.filter.RootFilter;
+import com.bassis.tools.exception.CustomException;
 import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
@@ -19,6 +20,7 @@ import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +39,7 @@ public class TomcatUtil {
         return TomcatUtil.LazyHolder.INSTANCE;
     }
 
+    private static MainArgsUtil mainArgsUtil = MainArgsUtil.getInstance();
     private Context context;
     private ApplicationConfig appApplicationConfig;
     private Tomcat tomcat = new Tomcat();
@@ -44,22 +47,12 @@ public class TomcatUtil {
     private BassisServlet bassisServlet = new BassisServlet();
 
     /**
-     * 加入初始化 tomcat 参数
-     *
-     * @param appApplicationConfig 参数配置
-     */
-    protected void init(ApplicationConfig appApplicationConfig) {
-        this.appApplicationConfig = appApplicationConfig;
-    }
-
-    /**
      * 启动 tomcat
+     * @param appApplicationConfig 启动配置
      */
-    protected void start() {
-        //启动 BeanFactory
-        logger.debug("BeanFactory start...");
-        BeanFactory.startBeanFactory(appApplicationConfig.getScanRoot());
-        defaultConfig();
+    protected void start(ApplicationConfig appApplicationConfig) {
+        this.appApplicationConfig = appApplicationConfig;
+        defaultConfig(mainArgsUtil.getArgs());
         //启动 tomcat
         logger.debug("Tomcat start...");
         connector = tomcat.getConnector();
@@ -74,18 +67,20 @@ public class TomcatUtil {
             logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath() + "]");
             tomcat.getServer().await();
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            CustomException.throwOut(" start [" + Declaration.startSchemaWeb + "] error ", e);
         }
     }
 
     /**
      * 默认配置
      */
-    private void defaultConfig() {
+    private void defaultConfig(String[] args) {
         //设置上下文
         context = tomcat.addContext(appApplicationConfig.getContextPath(), null);
+        Map<String, String> servletParameters = initBassisServletParameters();
+        if (args != null) servletParameters.put(Declaration.mainArgs, Arrays.toString(args));
         //加入bassisServlet,设置启动顺序为1
-        addServlet(bassisServlet, appApplicationConfig.getServletName(), appApplicationConfig.getUrlSysPattern(), 1, initBassisServletParameters());
+        addServlet(bassisServlet, appApplicationConfig.getServletName(), appApplicationConfig.getUrlSysPattern(), 1, servletParameters);
         //加入编码拦截器
         addFilter(new CharacterEncodingFilter(), CharacterEncodingFilter.class.getSimpleName(), "/", "/*");
         //加入请求root拦截器

@@ -190,13 +190,10 @@ public class ComponentImpl {
         String aliasName = annotation.name();
         //原始名称
         String name = clz.getName();
-        if (beansObject.containsKey(name)) {
-            CustomException.throwOut(" @Component bean [" + name + "] repeat:" + name);
-        }
+        if (beansObject.containsKey(name)) CustomException.throwOut(" @Component bean [" + name + "] repeat:" + name);
         if (!StringUtils.isEmptyString(aliasName)) {
-            if (aliasBeanName.containsKey(aliasName)) {
+            if (aliasBeanName.containsKey(aliasName))
                 CustomException.throwOut(" @Component bean [" + name + "] aliasName repeat:" + aliasName);
-            }
             aliasBeanName.put(aliasName, clz.getName());
         }
         Map<Method, Boolean> mapMethod = new HashMap<>();

@@ -34,7 +34,7 @@ public class ApplicationConfig implements Serializable {
     /**
      * 框架启动模式 默认
      */
-    String startSchema = "web";
+    String startSchema = Declaration.startSchemaAll;
 
     //######自动配置参数
     //自动生成

@@ -1,18 +1,12 @@
 package com.bassis.boot.application;
 
 
+import com.bassis.bean.BeanFactory;
 import com.bassis.boot.common.Declaration;
-import com.bassis.boot.event.ApplicationConfigEvent;
-import org.apache.catalina.Context;
-import org.apache.catalina.connector.Connector;
-import org.apache.catalina.startup.Tomcat;
 import com.bassis.boot.common.ApplicationConfig;
-import com.bassis.boot.container.BassisServlet;
 
+import com.bassis.tools.exception.CustomException;
 import org.apache.log4j.Logger;
-
-import javax.servlet.Filter;
-import javax.servlet.Servlet;
 
 
 /**
@@ -23,7 +17,8 @@ public class BassisApplication {
     static final Logger logger = Logger.getLogger(BassisApplication.class);
     private static ApplicationConfig appApplicationConfig = new ApplicationConfig();
     private static TomcatUtil tomcatUtil = TomcatUtil.getInstance();
-
+    private static MainArgsUtil mainArgsUtil = MainArgsUtil.getInstance();
+    private static boolean startSchemaCoreFag = true;
 
     /**
      * 带参数启动
@@ -34,7 +29,8 @@ public class BassisApplication {
      */
     public static void run(Class aClass, String[] args) {
         appApplicationConfig = AutoConfig.readProperties(aClass, appApplicationConfig);
-        start(args);
+        mainArgsUtil.setArgs(args);
+        start();
     }
 
     /**
@@ -53,24 +49,34 @@ public class BassisApplication {
     /**
      * 启动框架
      */
-    private static void start(String[] args) {
+    private static void start() {
+        //启动 BeanFactory
+        logger.debug("BeanFactory start...");
+        BeanFactory.startBeanFactory(appApplicationConfig.getScanRoot());
+        logger.debug("Application startSchema : " + appApplicationConfig.getStartSchema());
         switch (appApplicationConfig.getStartSchema()) {
-            case Declaration.startSchemaAll:
-                break;
             case Declaration.startSchemaWeb:
+                tomcatUtil.start(appApplicationConfig);
                 break;
             case Declaration.startSchemaCore:
+                new Thread(() -> {
+                    while (startSchemaCoreFag) {
+                        try {
+                            Thread.sleep(10000);
+                        } catch (Exception e) {
+                            CustomException.throwOut(" start [" + Declaration.startSchemaCore + "] error ", e);
+                        }
+                    }
+                }).start();
                 break;
             case Declaration.startSchemaRpc:
+                //TODO rpc启动
                 break;
-
             default:
                 //web启动
+                tomcatUtil.start(appApplicationConfig);
+                //TODO rpc启动
                 break;
-        }
-
-        if (args == null) {
-
         }
     }
 
@@ -78,8 +84,21 @@ public class BassisApplication {
      * 停止框架
      */
     private static void stop() {
-
+        switch (appApplicationConfig.getStartSchema()) {
+            case Declaration.startSchemaWeb:
+                tomcatUtil.down();
+                break;
+            case Declaration.startSchemaCore:
+                startSchemaCoreFag = false;
+                break;
+            case Declaration.startSchemaRpc:
+                //TODO rpc关闭
+                break;
+            default:
+                //tomcat关闭
+                tomcatUtil.down();
+                //TODO rpc关闭
+                break;
+        }
     }
-
-
 }
