@@ -1,12 +1,14 @@
 package com.bassis.bean.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.*;
 
 /**
  * 自定义bean注解
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Inherited
+@Documented
 public @interface Component {
     /**
      * bean对象的别名

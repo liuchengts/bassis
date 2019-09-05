@@ -32,10 +32,10 @@ public class ControllerImpl {
      */
     private static Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
 
-    // 包请求注解路径/包路径
-    private static Map<String, Class<?>> mapClass = new ConcurrentHashMap<>();
-    // 包请求注解路径 、 方法注解路径/方法名称
-    private static Map<String, Map<String, Method>> mapMethod = new ConcurrentHashMap<>();
+    //请求路径/方法
+    private static Map<String, Method> methodMap = new ConcurrentHashMap<>();
+    //请求路径/类
+    private static Map<String, Class> clazMap = new ConcurrentHashMap<>();
 
     // 只处理当前实现类的注解
     static {
@@ -56,8 +56,8 @@ public class ControllerImpl {
      * @return 返回包路径
      */
     public static Class<?> getMapClass(String key) {
-        if (!mapClass.containsKey(key)) return null;
-        return mapClass.get(key);
+        if (!clazMap.containsKey(key)) return null;
+        return clazMap.get(key);
     }
 
     /**
@@ -66,9 +66,9 @@ public class ControllerImpl {
      * @param key 包请求注解路径
      * @return 方法注解路径/方法名称
      */
-    public static Map<String, Method> getMapMethod(String key) {
-        if (!mapMethod.containsKey(key)) return null;
-        return mapMethod.get(key);
+    public static Method getMapMethod(String key) {
+        if (!methodMap.containsKey(key)) return null;
+        return methodMap.get(key);
     }
 
     /**
@@ -79,72 +79,28 @@ public class ControllerImpl {
     private static void analyse(Class<?> clz) {
         logger.debug(clz.getName());
         Controller annotation = clz.getAnnotation(Controller.class);
-        // 输出注解上的属性
         String path = annotation.value();
-        if (StringUtils.isEmptyString(path)) {
-            // 查找有没有RequestMapping注解
-            path = clz.isAnnotationPresent(RequestMapping.class) ? clz.getAnnotation(RequestMapping.class).value()
-                    : path;
-            // 如果没有给定注解值 那么让它以当前包的上级包路径+控制器名称 为请求路径 如 org.modao.controllers.Test
-            // 请求路径为 /controllers/Test
-            path = StringUtils.isEmptyString(path) ? ("/"
-                    + StringUtils.subStringCustom(clz.getName(), clz.getSimpleName(), ".") + "/" + clz.getSimpleName())
-                    : path;
-        }
-        // 如果两个控制器注解路径相同 策略是注解路径+类路径
-        if (mapClass.containsKey(path)) {
-            Class<?> _clz = getMapClass(path);
-            String _path = path + "/" + _clz.getSimpleName();
-            mapClass.put(_path, _clz);
-            mapClass.remove(path);
-            mapMethod.remove(path);
-            analyseMethods(_path, _clz);
-            logger.debug("找到了重复path :" + path + "|更改为 _path：" + _path);
-            _path = path + "/" + clz.getSimpleName();
-            mapClass.put(_path, clz);
-            analyseMethods(_path, clz);
-            logger.debug("原本重复path :" + path + "|更改为 _path：" + _path);
-        } else {
-            logger.debug("path:" + path);
-            mapClass.put(path, clz);
-            analyseMethods(path, clz);
-        }
-    }
-
-    /**
-     * 方法注解分析
-     *
-     * @param path 路径
-     * @param clz  带有@RequestMapping的类
-     */
-    private static void analyseMethods(String path, Class<?> clz) {
-        // 分析方法
+        // 如果没有给定注解值 那么让它以当前包的上级包路径+控制器名称 为请求路径 如 org.modao.controllers.Test
+        // 请求路径为 /controllers/Test
+        path = StringUtils.isEmptyString(path) ? ("/"
+                + StringUtils.subStringCustom(clz.getName(), clz.getSimpleName(), ".") + "/" + clz.getSimpleName())
+                : path;
         Method[] methods = clz.getDeclaredMethods();
-        Map<String, Method> map = getMapMethod(path);
-        map = null == map ? new HashMap<>() : map;
         for (Method method : methods) {
-            if (!method.isAnnotationPresent(RequestMapping.class)) continue;
-            // 得到注解
-            RequestMapping methodAnnotation = method.getAnnotation(RequestMapping.class);
             // 输出注解属性
-            String method_path = methodAnnotation.value();
+            String method_path = "";
+            if (method.isAnnotationPresent(RequestMapping.class)) {
+                RequestMapping methodAnnotation = method.getAnnotation(RequestMapping.class);
+                method_path = methodAnnotation.value();
+            }
             // 如果没有给定注解值 那么让它以当方法名称 为请求路径
             method_path = StringUtils.isEmptyString(method_path) ? ("/" + method.getName()) : method_path;
-            // 如果两个方法注解路径相同 策略是注解路径+方法名
-            if (map.containsKey(method_path)) {
-                Method _method = map.get(method_path);
-                String _path = method_path + "/" + _method.getName();
-                map.put(_path, _method);
-                map.remove(method_path);
-                logger.debug("找到了重复method_path :" + method_path + "|更改为 _path：" + _path);
-                _path = method_path + "/" + method.getName();
-                map.put(_path, method);
-                logger.debug("原本重复method_path :" + method_path + "|更改为 _path：" + _path);
-            } else {
-                logger.debug("method_path:" + method_path);
-                map.put(method_path, method);
-            }
+            method_path = path + method_path;
+            //检测是否重复url
+            if (clazMap.containsKey(method_path)) CustomException.throwOut("控制器类异常，重复的url：" + method_path);
+            if (methodMap.containsKey(method_path)) CustomException.throwOut("控制器方法异常，重复的url：" + method_path);
+            clazMap.put(method_path, clz);
+            methodMap.put(method_path, method);
         }
-        mapMethod.put(path, map);
     }
 }

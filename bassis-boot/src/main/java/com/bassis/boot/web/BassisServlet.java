@@ -1,6 +1,7 @@
-package com.bassis.boot.container;
+package com.bassis.boot.web;
 
 import com.bassis.bean.BeanFactory;
+import com.bassis.bean.common.Bean;
 import com.bassis.bean.event.ApplicationEventPublisher;
 import com.bassis.boot.event.ServletEvent;
 import com.bassis.boot.web.annotation.impl.ControllerImpl;
@@ -16,6 +17,12 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.bassis.boot.web.assist.ServletAttribute;
+import com.bassis.boot.web.assist.ServletClient;
+import com.bassis.boot.web.assist.ServletCookie;
+import com.bassis.boot.web.assist.ServletResource;
+import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.reflex.Reflection;
 import org.apache.log4j.Logger;
 
 /**
@@ -48,13 +55,22 @@ public class BassisServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         logger.debug("初始化service资源...");
-        System.out.println(request.getContextPath());
-//        ControllerImpl.getMapClass()
-
-
+        ServletAttribute servletAttribute = ServletAttribute.init(servletContext, request, response);
+        ServletResource servletResource = ServletResource.init(servletAttribute);
+        ServletClient servletClient = ServletClient.init(servletAttribute);
+        ServletCookie servletCookie = ServletCookie.init(servletAttribute);
+        Class<?> actionCla = ControllerImpl.getMapClass(servletResource.getPath());
+        Method method = ControllerImpl.getMapMethod(servletResource.getPath());
+        if (null == actionCla || null == method) {
+            CustomException.throwOut("没有找到资源：" + servletResource.getPath());
+        }
+        //交由bean进行生产
+        Bean bean = beanFactory.createBean(actionCla);
+        Reflection.invokeMethod(bean.getObject(), method, servletResource.getParameters().values());
+        //清除资源
+        beanFactory.removeBean(bean);
         logger.debug("service方法完成");
     }
-
 
     public void destroy() {
         logger.debug("资源销毁");

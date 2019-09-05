@@ -6,11 +6,9 @@ import com.bassis.bean.common.Bean;
 import com.bassis.bean.common.enums.ScopeEnum;
 import com.bassis.bean.event.ApplicationEventPublisher;
 import com.bassis.bean.event.domain.AutowiredEvent;
-import com.bassis.bean.event.domain.ResourcesEvent;
 import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
-import net.sf.cglib.beans.BeanGenerator;
 import org.apache.log4j.Logger;
 import com.bassis.bean.annotation.impl.ComponentImpl;
 
@@ -70,7 +68,6 @@ public class BeanFactory {
         getInstance().addBeanSingletonFactories();
         //发布资源就绪事件
         ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
-        ApplicationEventPublisher.publishEvent(new ResourcesEvent(Object.class));
         return getInstance();
     }
 
@@ -230,7 +227,7 @@ public class BeanFactory {
     }
 
     /**
-     * 获得一个资源就绪的bean
+     * 获得一个资源就绪的bean(最先创建的bean)
      *
      * @param name 要获得的实例的别名
      * @return 返回获得的bean
@@ -260,7 +257,7 @@ public class BeanFactory {
         Class<?> classt = this.getFieldClass(aclass);
         Bean bean = null;
         if (isBean(classt)) {
-            //存在bean 直接返回第一个bean
+            //存在bean 直接返回最后一个bean
             bean = objectBeanStorage.get(classt).getLast();
         }
         return bean;
@@ -317,10 +314,7 @@ public class BeanFactory {
         //检测接口的实现
         Class<?> classt = this.getFieldClass(aclass);
         newBeanTask(classt);
-        boolean fag = true;
-        while (fag) {
-            if (isBean(classt)) fag = false;
-        }
+        while (!isBean(classt));
         return getBeanLast(classt);
     }
 
