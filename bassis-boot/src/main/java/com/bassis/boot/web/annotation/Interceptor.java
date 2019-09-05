@@ -1,4 +1,4 @@
-package com.bassis.web.annotation;
+package com.bassis.boot.web.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

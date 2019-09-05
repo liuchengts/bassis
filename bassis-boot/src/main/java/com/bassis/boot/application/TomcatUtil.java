@@ -1,7 +1,6 @@
 package com.bassis.boot.application;
 
 import com.bassis.boot.common.ApplicationConfig;
-import com.bassis.boot.common.Declaration;
 import org.apache.catalina.Context;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
@@ -10,7 +9,6 @@ import org.apache.tomcat.util.descriptor.web.FilterMap;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
-import java.util.HashMap;
 import java.util.Map;
 
 public class TomcatUtil {

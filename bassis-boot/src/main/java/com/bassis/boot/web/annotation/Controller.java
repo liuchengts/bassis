@@ -1,12 +1,12 @@
-package com.bassis.web.annotation;
+package com.bassis.boot.web.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * 寻址
+ * 自定义action代理注解
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RequestMapping {
+public @interface Controller {
 	 String value()  default "";
 }

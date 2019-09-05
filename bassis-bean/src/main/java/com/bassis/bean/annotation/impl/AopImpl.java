@@ -95,9 +95,7 @@ public class AopImpl {
                 CustomException.throwOut(position + " @AopService methods is null , aop exit");
             }
             this.aopObject = ProxyFactory.invoke(aclass);
-            methods.forEach(m -> {
-                match(Reflection.getMethod(true, aopService, m.getName(), m.getParameterTypes()));
-            });
+            methods.forEach(m -> match(Reflection.getMethod(true, aopService, m.getName(), m.getParameterTypes())));
             if (null == preHandle
                     || null == postHandle
                     || null == afterCompletion) {
