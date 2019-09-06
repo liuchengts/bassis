@@ -9,9 +9,9 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Inherited
 @Documented
 @Component
 public @interface Controller {
+
     String value() default "";
 }

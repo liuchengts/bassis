@@ -1,15 +1,19 @@
 package com.bassis.bean.annotation;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 自定义注入资源注解
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
 public @interface Autowired {
     /**
      * 要注入的对象的别名，对应@Component的name
+     * 第一优先级
      */
     String value() default "";
 
@@ -21,5 +25,5 @@ public @interface Autowired {
     /**
      * 要注入的对象的别名，对应一个实际的class实例
      */
-    Class<?> aclass() default Object.class;
+    Class<?> aclass() default Autowired.class;
 }

@@ -314,7 +314,19 @@ public class BeanFactory {
         //检测接口的实现
         Class<?> classt = this.getFieldClass(aclass);
         newBeanTask(classt);
-        while (!isBean(classt));
+        int index = 0;
+        while (index <= 3) {
+            if (!isBean(classt)) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                index++;
+            } else {
+                break;
+            }
+        }
         return getBeanLast(classt);
     }
 

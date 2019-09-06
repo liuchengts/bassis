@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.bassis.boot.web.assist.ServletAttribute;
@@ -64,9 +66,24 @@ public class BassisServlet extends HttpServlet {
         if (null == actionCla || null == method) {
             CustomException.throwOut("没有找到资源：" + servletResource.getPath());
         }
+        //验证方法参数
+        LinkedHashMap<String, Boolean> mapParameters = ControllerImpl.getMapParameter(method);
+        assert mapParameters != null;
+        Object[] parameters = new Object[mapParameters.size()];
+        int index = 0;
+        for (Map.Entry<String, Boolean> p : mapParameters.entrySet()) {
+            //检查必须参数
+            System.out.println(p.getKey());
+            if (!servletResource.getParameters().containsKey(p.getKey()) && p.getValue())
+                CustomException.throwOut("method required parameter : " + p.getKey() + " is null [" + servletResource.getPath() + "]");
+            parameters[index] = servletResource.getParameters().get(p.getKey());
+            index++;
+        }
         //交由bean进行生产
         Bean bean = beanFactory.createBean(actionCla);
-        Reflection.invokeMethod(bean.getObject(), method, servletResource.getParameters().values());
+        System.out.println(parameters[0]);
+        Object resInvoke = Reflection.invokeMethod(bean.getObject(), method, parameters);
+        logger.info("resInvoke : " + resInvoke);
         //清除资源
         beanFactory.removeBean(bean);
         logger.debug("service方法完成");

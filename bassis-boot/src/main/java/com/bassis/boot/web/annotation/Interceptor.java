@@ -1,12 +1,13 @@
 package com.bassis.boot.web.annotation;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.*;
 
 /**
  * 自定义拦截器代理注解
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@Documented
 public @interface Interceptor {
 	/**
 	 * 要执行的 Interceptor 的对象的别名，对应@Component的name

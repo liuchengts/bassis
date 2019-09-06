@@ -3,14 +3,20 @@ package com.bassis.boot.web.annotation.impl;
 import com.bassis.bean.Scanner;
 import com.bassis.boot.web.annotation.Controller;
 import com.bassis.boot.web.annotation.RequestMapping;
+import com.bassis.boot.web.annotation.RequestParam;
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.reflex.Reflection;
 import com.bassis.tools.string.StringUtils;
+import jdk.internal.org.objectweb.asm.*;
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,20 +33,17 @@ public class ControllerImpl {
         return LazyHolder.INSTANCE;
     }
 
-    /**
-     * 扫描到的class
-     */
-    private static Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
-
-    //请求路径/方法
-    private static Map<String, Method> methodMap = new ConcurrentHashMap<>();
     //请求路径/类
     private static Map<String, Class> clazMap = new ConcurrentHashMap<>();
+    //请求路径/方法
+    private static Map<String, Method> methodMap = new ConcurrentHashMap<>();
+    //方法/参数名，是否必须
+    private static Map<Method, LinkedHashMap<String, Boolean>> parameterMap = new ConcurrentHashMap<>();
 
     // 只处理当前实现类的注解
     static {
         logger.debug("@Controller分析开始");
-        for (Class<?> clz : scanPackageList) {
+        for (Class<?> clz : Scanner.getInstance().getPackageList()) {
             try {
                 if (clz.isAnnotationPresent(Controller.class)) analyse(clz);
             } catch (Exception e) {
@@ -72,6 +75,17 @@ public class ControllerImpl {
     }
 
     /**
+     * 根据请求路径获取方法
+     *
+     * @param key 方法
+     * @return 方法注解路径/方法名称
+     */
+    public static LinkedHashMap<String, Boolean> getMapParameter(Method key) {
+        if (!parameterMap.containsKey(key)) return null;
+        return parameterMap.get(key);
+    }
+
+    /**
      * 处理 Controller注解 与 RequestMapping注解
      *
      * @param clz 带有@Controller的类
@@ -85,22 +99,103 @@ public class ControllerImpl {
         path = StringUtils.isEmptyString(path) ? ("/"
                 + StringUtils.subStringCustom(clz.getName(), clz.getSimpleName(), ".") + "/" + clz.getSimpleName())
                 : path;
+
         Method[] methods = clz.getDeclaredMethods();
+        Set<Method> methodSet = new LinkedHashSet<>();
         for (Method method : methods) {
+            if (!method.isAnnotationPresent(RequestMapping.class)) continue;
+            methodSet.add(method);
             // 输出注解属性
-            String method_path = "";
-            if (method.isAnnotationPresent(RequestMapping.class)) {
-                RequestMapping methodAnnotation = method.getAnnotation(RequestMapping.class);
-                method_path = methodAnnotation.value();
-            }
-            // 如果没有给定注解值 那么让它以当方法名称 为请求路径
+            RequestMapping methodAnnotation = method.getAnnotation(RequestMapping.class);
+            String method_path = methodAnnotation.value();
             method_path = StringUtils.isEmptyString(method_path) ? ("/" + method.getName()) : method_path;
             method_path = path + method_path;
             //检测是否重复url
             if (clazMap.containsKey(method_path)) CustomException.throwOut("控制器类异常，重复的url：" + method_path);
             if (methodMap.containsKey(method_path)) CustomException.throwOut("控制器方法异常，重复的url：" + method_path);
+            //进行路径注册
             clazMap.put(method_path, clz);
             methodMap.put(method_path, method);
         }
+        getMethodParameterName(clz, methodSet);
+        //分析方法内的参数注解
+        getMethodParameterByAnnotation(method);
+    }
+
+    /**
+     * 分析方法参数注解
+     *
+     * @param method 要获取参数名的方法
+     */
+    private static void getMethodParameterByAnnotation(Method method) {
+        LinkedHashMap<String, Boolean> map = new LinkedHashMap<>();
+        for (Parameter parameter : method.getParameters()) {
+            if (!parameter.isAnnotationPresent(RequestParam.class)) continue;
+            RequestParam annotation = parameter.getAnnotation(RequestParam.class);
+            String name = annotation.name();
+
+
+            if (StringUtils.isEmptyString(name)) name = parameter.getName();
+            boolean required = annotation.required();
+            map.put(name, required);
+        }
+        parameterMap.put(method, map);
+    }
+
+    private static Map<Method, List<String>> getMethodParameterName(Class<?> clazz, Set<Method> methodSet) {
+        Map<String, List<Object>> methodTypeMap = new HashMap<>();
+        Map<Method, List<String>> methods = new HashMap<>();
+        String className = clazz.getName();
+        className = className.substring(className.lastIndexOf(".") + 1) + ".class";
+        InputStream is = clazz.getResourceAsStream(className);
+        ClassReader classReader = null;
+        try {
+            classReader = new ClassReader(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        methodSet.forEach(method -> {
+            List<Object> list = new ArrayList<>();
+            list.add(method);
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            Type[] types = new Type[parameterTypes.length];
+            for (int i = 0; i < parameterTypes.length; i++) {
+                types[i] = Type.getType(parameterTypes[i]);
+            }
+            list.add(types);
+            methodTypeMap.put(method.getName(), list);
+        });
+        assert classReader != null;
+        classReader.accept(new ClassVisitor(Opcodes.ASM4) {
+            @Override
+            public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
+                //方法级别
+                if (!methodTypeMap.containsKey(name)) return null;
+                //获取方法
+                Type[] argumentTypes = Type.getArgumentTypes(desc);
+                List<Object> objectList = methodTypeMap.get(name);
+                Method method = (Method) objectList.get(0);
+                Type[] types = (Type[]) objectList.get(1);
+                if (!Arrays.equals(argumentTypes, types)) return null;
+                List<String> parameterList = new ArrayList<>();
+                MethodVisitor methodVisitor = new MethodVisitor(Opcodes.ASM4) {
+                    @Override
+                    public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
+                        //参数级别
+                        // 静态方法第一个参数就是方法的参数，如果是实例方法，第一个参数是this
+                        if (Modifier.isStatic(method.getModifiers())) {
+                            System.out.println("1Parameter:" + name + "| index:" + index);
+                            parameterList.add(name);
+                        } else if (index > 0) {
+                            System.out.println("2Parameter:" + name + "| index:" + index);
+                            parameterList.add(name);
+                        }
+                    }
+                };
+                methods.put(method, parameterList);
+                return methodVisitor;
+            }
+        }, 0);
+
     }
 }

@@ -33,11 +33,6 @@ public class ComponentImpl {
     }
 
     /**
-     * 扫描到的class
-     */
-    private static final Set<Class<?>> scanPackageList = Scanner.getInstance().getPackageList();
-
-    /**
      * class存储器， name:class
      */
     private static final Map<String, Class<?>> beansObject = new ConcurrentHashMap<>();
@@ -55,7 +50,7 @@ public class ComponentImpl {
      */
     static {
         logger.debug("@Component分析开始");
-        for (Class<?> clz : scanPackageList) {
+        for (Class<?> clz : Scanner.getInstance().getPackageList()) {
             try {
                 if (clz.isAnnotationPresent(Component.class)) analyse(clz);
             } catch (Exception e) {
