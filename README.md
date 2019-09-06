@@ -17,7 +17,7 @@ bassis
 * bassis_jdbc  后续会进行此项目开发
 
 # 特别说明
-* 计划将 bassis_web 移除，其web功能重写至 bassis_boot ，同时提供 精简内核方式与tomcat方式启动框架，以适应不同场景需求。
+* 计划将 bassis_web 移除，其web功能重写至 bassis_boot ，同时提供 vertx 或 tomcat 作为对外输出服务支持，以适应不同场景需求。
 
 ## 注意
 
