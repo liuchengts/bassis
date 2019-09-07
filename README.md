@@ -96,14 +96,14 @@ bassis
 * @Scope 需要针对多实例模式下的bean做copy或者重新创建操作 -- 已完成
 
 ### bassis_boot
-* 默认基本启动配置 需要支持个性化配置参数
-* 默认servlet容器 需要作为bassis_web基础依赖入口
+* 默认基本启动配置 需要支持个性化配置参数 -- 已完成
+* 默认servlet容器 需要作为bassis_web基础依赖入口 -- 已完成
 
 ### bassis_web
-* @Controller 需要重写ioc逻辑 要与@Component保持一致
-* 请求路径自动匹配bean实现 需要优化路径存储已经寻址算法
+* @Controller 需要重写ioc逻辑 要与@Component保持一致 -- 已完成
+* 请求路径自动匹配bean实现 需要优化路径存储已经寻址算法 -- 已完成
 * @Interceptor及Interceptor栈实现 需要调试来兼容最新的aop功能
-* @RequestMapping 实现 需要配合路径自动匹配
+* @RequestMapping 实现 需要配合路径自动匹配 -- 已完成
 * 数据装配与解析返回基本实现 需要重写定义大部分返回逻辑，抽离页面与数据的耦合
 
 ### bassis_hibernate
