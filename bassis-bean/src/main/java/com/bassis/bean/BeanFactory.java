@@ -30,7 +30,7 @@ public class BeanFactory {
     private BeanFactory() {
     }
 
-    public static final BeanFactory getInstance() {
+    public static  BeanFactory getInstance() {
         return BeanFactory.LazyHolder.INSTANCE;
     }
 

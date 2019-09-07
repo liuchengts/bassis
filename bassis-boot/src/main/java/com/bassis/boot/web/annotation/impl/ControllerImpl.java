@@ -5,14 +5,12 @@ import com.bassis.boot.web.annotation.Controller;
 import com.bassis.boot.web.annotation.RequestMapping;
 import com.bassis.boot.web.annotation.RequestParam;
 import com.bassis.tools.exception.CustomException;
-import com.bassis.tools.reflex.Reflection;
 import com.bassis.tools.string.StringUtils;
 import jdk.internal.org.objectweb.asm.*;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -29,7 +27,7 @@ public class ControllerImpl {
         private static final ControllerImpl INSTANCE = new ControllerImpl();
     }
 
-    public static final ControllerImpl getInstance() {
+    public static ControllerImpl getInstance() {
         return LazyHolder.INSTANCE;
     }
 
@@ -117,9 +115,9 @@ public class ControllerImpl {
             clazMap.put(method_path, clz);
             methodMap.put(method_path, method);
         }
-        getMethodParameterName(clz, methodSet);
+        Map<Method, List<String>> methodListMap = getMethodParameterName(clz, methodSet);
         //分析方法内的参数注解
-        getMethodParameterByAnnotation(method);
+        methodListMap.forEach(ControllerImpl::getMethodParameterByAnnotation);
     }
 
     /**
@@ -127,15 +125,15 @@ public class ControllerImpl {
      *
      * @param method 要获取参数名的方法
      */
-    private static void getMethodParameterByAnnotation(Method method) {
+    private static void getMethodParameterByAnnotation(Method method, List<String> lists) {
         LinkedHashMap<String, Boolean> map = new LinkedHashMap<>();
+        int index = -1;
         for (Parameter parameter : method.getParameters()) {
+            index++;
             if (!parameter.isAnnotationPresent(RequestParam.class)) continue;
             RequestParam annotation = parameter.getAnnotation(RequestParam.class);
             String name = annotation.name();
-
-
-            if (StringUtils.isEmptyString(name)) name = parameter.getName();
+            if (StringUtils.isEmptyString(name)) name = lists.get(index);
             boolean required = annotation.required();
             map.put(name, required);
         }
@@ -196,6 +194,6 @@ public class ControllerImpl {
                 return methodVisitor;
             }
         }, 0);
-
+        return methods;
     }
 }

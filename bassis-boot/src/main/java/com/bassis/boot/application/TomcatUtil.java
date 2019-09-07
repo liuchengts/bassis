@@ -35,7 +35,7 @@ public class TomcatUtil {
     private TomcatUtil() {
     }
 
-    public static final TomcatUtil getInstance() {
+    public static TomcatUtil getInstance() {
         return TomcatUtil.LazyHolder.INSTANCE;
     }
 

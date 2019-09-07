@@ -28,7 +28,7 @@ public class ComponentImpl {
     private ComponentImpl() {
     }
 
-    public static final ComponentImpl getInstance() {
+    public static  ComponentImpl getInstance() {
         return LazyHolder.INSTANCE;
     }
 
@@ -45,9 +45,6 @@ public class ComponentImpl {
      */
     private static final Map<String, Map<Method, Boolean>> beanMethods = new ConcurrentHashMap<>();
 
-    /**
-     * 只处理当前实现类的注解
-     */
     static {
         logger.debug("@Component分析开始");
         for (Class<?> clz : Scanner.getInstance().getPackageList()) {
@@ -153,7 +150,7 @@ public class ComponentImpl {
         }
 
         if (!beanMethods.containsKey(key)) return null;
-        return beanMethods.get(key).entrySet().stream().filter(map -> Boolean.TRUE.equals(map.getValue())).map(map -> map.getKey()).collect(Collectors.toSet());
+        return beanMethods.get(key).entrySet().stream().filter(map -> Boolean.TRUE.equals(map.getValue())).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
     /**
@@ -170,7 +167,7 @@ public class ComponentImpl {
             key = name;
         }
         if (!beanMethods.containsKey(key)) return null;
-        return beanMethods.get(key).entrySet().stream().filter(map -> Boolean.FALSE.equals(map.getValue())).map(map -> map.getKey()).collect(Collectors.toSet());
+        return beanMethods.get(key).entrySet().stream().filter(map -> Boolean.FALSE.equals(map.getValue())).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
     /**
@@ -193,9 +190,7 @@ public class ComponentImpl {
         }
         Map<Method, Boolean> mapMethod = new HashMap<>();
         beansObject.put(name, clz);
-        Arrays.stream(clz.getDeclaredMethods()).forEach(method -> {
-            mapMethod.put(method, AopImpl.isAop(method));
-        });
+        Arrays.stream(clz.getDeclaredMethods()).forEach(method -> mapMethod.put(method, AopImpl.isAop(method)));
         beanMethods.put(name, mapMethod);
     }
 

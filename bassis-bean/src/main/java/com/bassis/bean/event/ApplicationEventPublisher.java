@@ -15,7 +15,7 @@ public class ApplicationEventPublisher {
     private ApplicationEventPublisher() {
     }
 
-    public static final ApplicationEventPublisher getInstance() {
+    public static  ApplicationEventPublisher getInstance() {
         return ApplicationEventPublisher.LazyHolder.INSTANCE;
     }
 
