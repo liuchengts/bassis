@@ -1,15 +1,14 @@
 package com.bassis.bean.annotation;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * 自定义注入资源注解
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
+@Inherited
+@Documented
 public @interface Autowired {
     /**
      * 要注入的对象的别名，对应@Component的name

@@ -2,13 +2,15 @@ package com.bassis.bean.annotation;
 
 import com.bassis.bean.common.enums.ScopeEnum;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.*;
 
 /**
  * bean生成范围
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Inherited
+@Documented
 public @interface Scope {
     /**
      * 当前bean的生成范围

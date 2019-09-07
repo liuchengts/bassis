@@ -4,6 +4,7 @@ import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
+@Inherited
 @Documented
 public @interface RequestParam {
     /**
