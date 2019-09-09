@@ -182,10 +182,8 @@ public class ControllerImpl {
                         //参数级别
                         // 静态方法第一个参数就是方法的参数，如果是实例方法，第一个参数是this
                         if (Modifier.isStatic(method.getModifiers())) {
-                            System.out.println("1Parameter:" + name + "| index:" + index);
                             parameterList.add(name);
                         } else if (index > 0) {
-                            System.out.println("2Parameter:" + name + "| index:" + index);
                             parameterList.add(name);
                         }
                     }

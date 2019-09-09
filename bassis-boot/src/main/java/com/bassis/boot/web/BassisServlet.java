@@ -73,7 +73,6 @@ public class BassisServlet extends HttpServlet {
         int index = 0;
         for (Map.Entry<String, Boolean> p : mapParameters.entrySet()) {
             //检查必须参数
-            System.out.println(p.getKey());
             if (!servletResource.getParameters().containsKey(p.getKey()) && p.getValue())
                 CustomException.throwOut("method required parameter : " + p.getKey() + " is null [" + servletResource.getPath() + "]");
             parameters[index] = servletResource.getParameters().get(p.getKey());
@@ -81,7 +80,6 @@ public class BassisServlet extends HttpServlet {
         }
         //交由bean进行生产
         Bean bean = beanFactory.createBean(actionCla);
-        System.out.println(parameters[0]);
         Object resInvoke = Reflection.invokeMethod(bean.getObject(), method, parameters);
         logger.info("resInvoke : " + resInvoke);
         //清除资源
