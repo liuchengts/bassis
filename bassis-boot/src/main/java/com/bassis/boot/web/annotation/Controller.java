@@ -1,6 +1,8 @@
 package com.bassis.boot.web.annotation;
 
 import com.bassis.bean.annotation.Component;
+import com.bassis.bean.annotation.Scope;
+import com.bassis.bean.common.enums.ScopeEnum;
 
 import java.lang.annotation.*;
 
@@ -12,6 +14,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Component
+@Scope(value = ScopeEnum.PROTOTYPE)
 public @interface Controller {
 
     String value() default "";

@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
@@ -36,7 +35,7 @@ public class ControllerImpl {
     //请求路径/方法
     private static Map<String, Method> methodMap = new ConcurrentHashMap<>();
     //方法/参数名，是否必须
-    private static Map<Method, LinkedHashMap<String, Boolean>> parameterMap = new ConcurrentHashMap<>();
+    private static Map<Method, List<Object>> parameterMap = new ConcurrentHashMap<>();
 
     // 只处理当前实现类的注解
     static {
@@ -76,9 +75,9 @@ public class ControllerImpl {
      * 根据请求路径获取方法
      *
      * @param key 方法
-     * @return 方法注解路径/方法名称
+     * @return 方法参数名称  方法类型  是否必须
      */
-    public static LinkedHashMap<String, Boolean> getMapParameter(Method key) {
+    public static List<Object> getMapParameter(Method key) {
         if (!parameterMap.containsKey(key)) return null;
         return parameterMap.get(key);
     }
@@ -126,7 +125,7 @@ public class ControllerImpl {
      * @param method 要获取参数名的方法
      */
     private static void getMethodParameterByAnnotation(Method method, List<String> lists) {
-        LinkedHashMap<String, Boolean> map = new LinkedHashMap<>();
+        List<Object> objectList = new ArrayList<>();
         int index = -1;
         for (Parameter parameter : method.getParameters()) {
             index++;
@@ -135,20 +134,19 @@ public class ControllerImpl {
             String name = annotation.name();
             if (StringUtils.isEmptyString(name)) name = lists.get(index);
             boolean required = annotation.required();
-            map.put(name, required);
+            objectList.add(name);
+            objectList.add(parameter.getType());
+            objectList.add(required);
         }
-        parameterMap.put(method, map);
+        parameterMap.put(method, objectList);
     }
 
     private static Map<Method, List<String>> getMethodParameterName(Class<?> clazz, Set<Method> methodSet) {
         Map<String, List<Object>> methodTypeMap = new HashMap<>();
         Map<Method, List<String>> methods = new HashMap<>();
-        String className = clazz.getName();
-        className = className.substring(className.lastIndexOf(".") + 1) + ".class";
-        InputStream is = clazz.getResourceAsStream(className);
         ClassReader classReader = null;
         try {
-            classReader = new ClassReader(is);
+            classReader = new ClassReader(clazz.getName());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -176,8 +174,7 @@ public class ControllerImpl {
                 Type[] types = (Type[]) objectList.get(1);
                 if (!Arrays.equals(argumentTypes, types)) return null;
                 List<String> parameterList = new ArrayList<>();
-                MethodVisitor methodVisitor = new MethodVisitor(Opcodes.ASM4) {
-                    @Override
+                MethodVisitor v = new MethodVisitor(Opcodes.ASM4) {
                     public void visitLocalVariable(String name, String desc, String signature, Label start, Label end, int index) {
                         //参数级别
                         // 静态方法第一个参数就是方法的参数，如果是实例方法，第一个参数是this
@@ -189,7 +186,7 @@ public class ControllerImpl {
                     }
                 };
                 methods.put(method, parameterList);
-                return methodVisitor;
+                return v;
             }
         }, 0);
         return methods;

@@ -95,7 +95,10 @@ public class AopImpl {
             if (null == methods) {
                 CustomException.throwOut(position + " @AopService methods is null , aop exit");
             }
+            assert aclass != null;
+            //TODO  这里需要将代理更改为beanfactory,需要有注入能力
             this.aopObject = ProxyFactory.invoke(aclass);
+            assert methods != null;
             methods.forEach(m -> match(Reflection.getMethod(true, aopService, m.getName(), m.getParameterTypes())));
             if (null == preHandle
                     || null == postHandle

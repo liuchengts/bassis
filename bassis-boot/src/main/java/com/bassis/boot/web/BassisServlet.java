@@ -8,15 +8,12 @@ import com.bassis.boot.web.annotation.impl.ControllerImpl;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.bassis.boot.web.assist.ServletAttribute;
@@ -54,36 +51,51 @@ public class BassisServlet extends HttpServlet {
     }
 
     protected void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         request.setCharacterEncoding("utf-8");
         logger.debug("初始化service资源...");
-        ServletAttribute servletAttribute = ServletAttribute.init(servletContext, request, response);
-        ServletResource servletResource = ServletResource.init(servletAttribute);
-        ServletClient servletClient = ServletClient.init(servletAttribute);
-        ServletCookie servletCookie = ServletCookie.init(servletAttribute);
-        Class<?> actionCla = ControllerImpl.getMapClass(servletResource.getPath());
-        Method method = ControllerImpl.getMapMethod(servletResource.getPath());
-        if (null == actionCla || null == method) {
-            CustomException.throwOut("没有找到资源：" + servletResource.getPath());
+        try {
+            ServletAttribute servletAttribute = ServletAttribute.init(servletContext, request, response);
+            ServletResource servletResource = ServletResource.init(servletAttribute);
+            ServletClient servletClient = ServletClient.init(servletAttribute);
+            ServletCookie servletCookie = ServletCookie.init(servletAttribute);
+            Class<?> actionCla = ControllerImpl.getMapClass(servletResource.getPath());
+            Method method = ControllerImpl.getMapMethod(servletResource.getPath());
+            if (null == actionCla || null == method) {
+                CustomException.throwOut("没有找到资源:" + servletResource.getPath());
+            }
+            assert method != null;
+            if (method.isVarArgs()) {
+                CustomException.throwOut("可变参数:" + servletResource.getPath() + " method:" + method.getName());
+            }
+            List<Object> parameters = ControllerImpl.getMapParameter(method);
+            //请求参数值，参数值类型
+            Map<Object, Object> mapParameters = new LinkedHashMap<>();
+            if (parameters != null) {
+                //验证方法参数
+                int count = parameters.size() / 3;
+                if (count <= 0) count = 1;
+                for (int i = 0; i < count; i = i + 3) {
+                    String name = (String) parameters.get(i);
+                    Class<?> type = (Class<?>) parameters.get(i + 1);
+                    Boolean required = (Boolean) parameters.get(i + 2);
+                    //检查必须参数
+                    if (!servletResource.getParameters().containsKey(name) && required)
+                        CustomException.throwOut("method required parameter : " + name + " is null [" + servletResource.getPath() + "]");
+                    String[] ps = (String[]) servletResource.getParameters().get(name);
+                    mapParameters.put(ps[0], type);
+                }
+            }
+            //交由bean进行生产
+            Bean bean = beanFactory.createBean(actionCla);
+            System.out.println(bean.toString() + " | " + bean.getObject().toString());
+            Object resInvoke = Reflection.invokeMethod(bean.getObject(), method, mapParameters.keySet().toArray());
+            logger.info("resInvoke : " + resInvoke);
+            //清除资源
+//            beanFactory.removeBean(bean);
+        } catch (Exception e) {
+            CustomException.throwOut("controller error", e);
         }
-        //验证方法参数
-        LinkedHashMap<String, Boolean> mapParameters = ControllerImpl.getMapParameter(method);
-        assert mapParameters != null;
-        Object[] parameters = new Object[mapParameters.size()];
-        int index = 0;
-        for (Map.Entry<String, Boolean> p : mapParameters.entrySet()) {
-            //检查必须参数
-            if (!servletResource.getParameters().containsKey(p.getKey()) && p.getValue())
-                CustomException.throwOut("method required parameter : " + p.getKey() + " is null [" + servletResource.getPath() + "]");
-            parameters[index] = servletResource.getParameters().get(p.getKey());
-            index++;
-        }
-        //交由bean进行生产
-        Bean bean = beanFactory.createBean(actionCla);
-        Object resInvoke = Reflection.invokeMethod(bean.getObject(), method, parameters);
-        logger.info("resInvoke : " + resInvoke);
-        //清除资源
-        beanFactory.removeBean(bean);
         logger.debug("service方法完成");
     }
 

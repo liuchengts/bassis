@@ -30,7 +30,7 @@ public class BeanFactory {
     private BeanFactory() {
     }
 
-    public static  BeanFactory getInstance() {
+    public static BeanFactory getInstance() {
         return BeanFactory.LazyHolder.INSTANCE;
     }
 
@@ -157,14 +157,16 @@ public class BeanFactory {
         try {
             assert bean != null;
             assert bean.getObject() != null;
-            Class aclass = bean.getObject().getClass();
+            Class aclass = bean.getObject().getClass().getSuperclass();
             //删除bean存储器
             if (!isBean(aclass)) return false;
             LinkedList<Bean> beans = objectBeanStorage.get(aclass);
             if (beans.isEmpty()) return false;
             if (null != bean.getIndex() && bean.getIndex() > 0) {
-                beans.remove(bean.getIndex().intValue());
-                objectBeanStorage.put(aclass, beans);
+                beans.remove(bean.getIndex() - 1);
+                if (beans.isEmpty()) objectBeanStorage.remove(aclass);
+                else objectBeanStorage.put(aclass, beans);
+                logger.debug("remove bean class:" + aclass + " index:" + bean.getIndex());
                 return true;
             } else {
                 logger.warn("bean index is null");
