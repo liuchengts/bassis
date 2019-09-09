@@ -86,13 +86,18 @@ public class BassisServlet extends HttpServlet {
                     mapParameters.put(ps[0], type);
                 }
             }
+            beanFactory.getBeanList(actionCla).forEach(bean -> {
+                System.out.println("bean:" + bean.getObject().toString());
+                System.out.println("bean:" + bean.getIndex());
+                System.out.println("bean:" + bean.getCv());
+                System.out.println("bean:" + bean.getOv());
+            });
             //交由bean进行生产
             Bean bean = beanFactory.createBean(actionCla);
-            System.out.println(bean.toString() + " | " + bean.getObject().toString());
             Object resInvoke = Reflection.invokeMethod(bean.getObject(), method, mapParameters.keySet().toArray());
             logger.info("resInvoke : " + resInvoke);
             //清除资源
-//            beanFactory.removeBean(bean);
+            beanFactory.removeBean(bean);
         } catch (Exception e) {
             CustomException.throwOut("controller error", e);
         }

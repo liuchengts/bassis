@@ -9,6 +9,7 @@ import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.bean.test.service.TestService1;
 import com.bassis.bean.test.service.TestService2;
 import com.bassis.bean.test.service.TestService3;
+import com.bassis.bean.test.service.TestService4;
 import com.bassis.bean.test.service.impl.TestService1Impl;
 import com.bassis.bean.test.service.impl.TestService2Impl;
 import com.bassis.bean.test.service.impl.TestService3Impl;
@@ -26,10 +27,20 @@ public class TestMain {
     public static void main(String[] args) throws Exception {
         //启动 BeanFactory
         beanFactory = BeanFactory.startBeanFactory("com.bassis.bean.test");
-        testForAutowired();
-        testAop();
-        testApplicationEvent();
-        testCopyBean();
+        testCreateBean();
+//        testForAutowired();
+//        testAop();
+//        testApplicationEvent();
+//        testCopyBean();
+    }
+
+    private static void testCreateBean() {
+        int i = 0;
+        while (i < 3) {
+            TestService4 service4 = (TestService4) beanFactory.createBean(TestService4.class).getObject();
+            service4.out();
+            i++;
+        }
     }
 
     private static void testAop() {

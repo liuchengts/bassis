@@ -162,15 +162,15 @@ public class BeanFactory {
             if (!isBean(aclass)) return false;
             LinkedList<Bean> beans = objectBeanStorage.get(aclass);
             if (beans.isEmpty()) return false;
-            if (null != bean.getIndex() && bean.getIndex() > 0) {
-                beans.remove(bean.getIndex() - 1);
-                if (beans.isEmpty()) objectBeanStorage.remove(aclass);
-                else objectBeanStorage.put(aclass, beans);
-                logger.debug("remove bean class:" + aclass + " index:" + bean.getIndex());
-                return true;
-            } else {
-                logger.warn("bean index is null");
-            }
+            int index = beans.size() - 1;
+            if (index < 0) index = 0;
+            beans.remove(index);
+            if (beans.isEmpty()) objectBeanStorage.remove(aclass);
+            else objectBeanStorage.put(aclass, beans);
+
+            singletonFactories.get(aclass);
+            logger.debug("remove bean class:" + aclass + " index:" + bean.getIndex());
+            return true;
         } catch (Exception e) {
             CustomException.throwOut(" removeBean exception", e);
         }
