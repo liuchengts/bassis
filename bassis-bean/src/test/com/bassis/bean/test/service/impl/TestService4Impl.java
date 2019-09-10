@@ -5,8 +5,6 @@ import com.bassis.bean.annotation.Component;
 import com.bassis.bean.annotation.Scope;
 import com.bassis.bean.common.enums.ScopeEnum;
 import com.bassis.bean.test.TestComponent;
-import com.bassis.bean.test.service.TestService1;
-import com.bassis.bean.test.service.TestService3;
 import com.bassis.bean.test.service.TestService4;
 import org.apache.log4j.Logger;
 

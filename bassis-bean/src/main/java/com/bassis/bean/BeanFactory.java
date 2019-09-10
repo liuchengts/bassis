@@ -128,7 +128,15 @@ public class BeanFactory {
             //将这个bean放入一级缓存
             addBean(bean);
             singletonFactories.remove(aclass);
+
+            if (aclass.getName().equals("com.bassis.bean.test.service.impl.TestService4Impl"))
+                logger.debug(">>>>>>>>>>> TestService4Impl 第三阶段 选择");
+
         } else {
+
+            if (aclass.getName().equals("com.bassis.bean.test.service.impl.TestService4Impl"))
+                logger.debug(">>>>>>>>>>> TestService4Impl 第一阶段 创建");
+
             //创建一个待初始化的bean放入二级缓存
             Bean bean = new Bean(ProxyFactory.invoke(aclass));
             singletonFactories.put(aclass, bean);

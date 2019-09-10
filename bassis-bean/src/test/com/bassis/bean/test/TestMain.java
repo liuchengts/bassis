@@ -35,6 +35,9 @@ public class TestMain {
     }
 
     private static void testCreateBean() {
+        //TODO bug：多例模式下产生的bean问题
+        //TODO 1、第二次的对象获取是直接获得的一级缓存，应该是重新创建一个bean
+        //TODO 2、第三次进行了重新创建注入 但是没有走注入以及注入检测过程，直接从一级缓存中获得了一个未注入属性的对象，引发了第三次调用的属性为null的问题
         int i = 0;
         while (i < 3) {
             TestService4 service4 = (TestService4) beanFactory.createBean(TestService4.class).getObject();

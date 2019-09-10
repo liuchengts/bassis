@@ -81,6 +81,7 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
                 fieldBeans.add(new FieldBean(obj, field, fieldClass));
                 //根据fieldClass 向beanFactory提交一个创建bean的任务，如果任务完成会通知所有关联的注入对象进行资源注入
                 beanFactory.newBeanTask(fieldClass);
+                logger.debug(position + " 字段注入任务创建成功");
             } else logger.warn(position + " 没有找到可用资源");
         } catch (Exception e) {
             logger.error(position + " 字段参数注入失败", e);
@@ -91,8 +92,13 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
      * 执行注入
      */
     private void twoStageAutowired() {
+        logger.debug(">>>>>>>>>>> twoStageAutowired 注入属性检查:" + fieldBeans.size());
+        fieldBeans.forEach(d -> {
+            logger.debug(">>>>>>>>>>> twoStageAutowired >>fieldBean:" + d.getObject().getClass() + ":" + d.getFieldClass());
+        });
         this.fieldBeans.forEach(this::fieldBeanAutowired);
         this.fieldBeans.clear();
+
     }
 
     /**
@@ -101,6 +107,10 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
      * @param fieldBean 要操作的fieldBean
      */
     private void fieldBeanAutowired(FieldBean fieldBean) {
+
+        if (fieldBean.getObject().getClass().getSuperclass().getName().equals("com.bassis.bean.test.service.impl.TestService4Impl"))
+            logger.debug(">>>>>>>>>>> TestService4Impl 第二阶段 注入属性");
+
         String position = "[twoStageAutowired] bean: " + fieldBean.getObject().getClass().getName() + "field:" + fieldBean.getField().getName();
         Bean bean = beanFactory.createBean(fieldBean.getFieldClass());
         if (null == bean) CustomException.throwOut(position + " @Autowired not resource bean");
