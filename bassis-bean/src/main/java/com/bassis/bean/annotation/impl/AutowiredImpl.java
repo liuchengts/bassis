@@ -75,17 +75,13 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
                     fieldClass = ComponentImpl.getBeansClass(aclass);
             }
             //注解中获取不到时从默认关系中获取
-            if (null == fieldClass) {
-                fieldClass = beanFactory.getFieldClass(cla);
-            }
+            if (null == fieldClass) fieldClass = beanFactory.getComponentClass(cla);
             if (null != fieldClass) {
                 //放入当前注入对象任务区，等待循环依赖资源初始化完成
                 fieldBeans.add(new FieldBean(obj, field, fieldClass));
                 //根据fieldClass 向beanFactory提交一个创建bean的任务，如果任务完成会通知所有关联的注入对象进行资源注入
                 beanFactory.newBeanTask(fieldClass);
-            } else {
-                logger.warn(position + " 没有找到可用资源");
-            }
+            } else logger.warn(position + " 没有找到可用资源");
         } catch (Exception e) {
             logger.error(position + " 字段参数注入失败", e);
         }
@@ -107,14 +103,10 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
     private void fieldBeanAutowired(FieldBean fieldBean) {
         String position = "[twoStageAutowired] bean: " + fieldBean.getObject().getClass().getName() + "field:" + fieldBean.getField().getName();
         Bean bean = beanFactory.createBean(fieldBean.getFieldClass());
-        if (null == bean) {
-            CustomException.throwOut(position + " @Autowired not resource bean");
-        }
+        if (null == bean) CustomException.throwOut(position + " @Autowired not resource bean");
         assert bean != null;
         Object fieldObject = bean.getObject();
-        if (null == fieldObject) {
-            CustomException.throwOut(position + " @Autowired not resource object");
-        }
+        if (null == fieldObject) CustomException.throwOut(position + " @Autowired not resource object");
         try {
             fieldBean.getField().set(fieldBean.getObject(), fieldObject);
         } catch (IllegalAccessException e) {

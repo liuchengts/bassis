@@ -167,8 +167,6 @@ public class BeanFactory {
             beans.remove(index);
             if (beans.isEmpty()) objectBeanStorage.remove(aclass);
             else objectBeanStorage.put(aclass, beans);
-
-            singletonFactories.get(aclass);
             logger.debug("remove bean class:" + aclass + " index:" + bean.getIndex());
             return true;
         } catch (Exception e) {
@@ -186,7 +184,7 @@ public class BeanFactory {
      */
     public LinkedList<Bean> getBeanList(Class<?> aclass) {
         //检测接口的实现
-        Class<?> classt = this.getFieldClass(aclass);
+        Class<?> classt = this.getComponentClass(aclass);
         LinkedList<Bean> beans = new LinkedList<>();
         if (isBean(classt)) {
             beans = objectBeanStorage.get(classt);
@@ -219,7 +217,7 @@ public class BeanFactory {
      */
     public Bean getBeanFirst(Class<?> aclass) {
         //检测接口的实现
-        Class<?> classt = this.getFieldClass(aclass);
+        Class<?> classt = this.getComponentClass(aclass);
         Bean bean = null;
         if (isBean(classt)) {
             //存在bean 直接返回第一个bean
@@ -256,7 +254,7 @@ public class BeanFactory {
      */
     public Bean getBeanLast(Class<?> aclass) {
         //检测接口的实现
-        Class<?> classt = this.getFieldClass(aclass);
+        Class<?> classt = this.getComponentClass(aclass);
         Bean bean = null;
         if (isBean(classt)) {
             //存在bean 直接返回最后一个bean
@@ -314,7 +312,7 @@ public class BeanFactory {
      */
     public Bean createBean(Class<?> aclass) {
         //检测接口的实现
-        Class<?> classt = this.getFieldClass(aclass);
+        Class<?> classt = this.getComponentClass(aclass);
         newBeanTask(classt);
         int index = 0;
         while (index <= 3) {
@@ -336,25 +334,25 @@ public class BeanFactory {
      * 获得field上的对应资源实例
      * 对应的资源实例必须有@Component注解
      *
-     * @param fieldClass 属性字段的class实例
+     * @param aclassz class实例
      * @return 返回对应的资源
      */
-    public Class<?> getFieldClass(Class<?> fieldClass) {
+    public Class<?> getComponentClass(Class<?> aclassz) {
         //默认field是一个类
-        Class<?> aclass = fieldClass;
+        Class<?> aclass = aclassz;
         //判断field是否是接口
-        if (fieldClass.isInterface()) {
+        if (aclassz.isInterface()) {
             //是一个接口，寻找所有的实现类
-            List<Class<?>> classImplList = Reflection.getInterfaceImplClass(fieldClass, false);
+            List<Class<?>> classImplList = Reflection.getInterfaceImplClass(aclassz, false);
             if (classImplList.isEmpty()) {
-                logger.warn(fieldClass.getName() + " classImplList count is 0");
+                logger.warn(aclassz.getName() + " classImplList count is 0");
                 return null;
             }
             //过滤cglib代理
             List<Class<?>> classList = classImplList.stream().filter(cla -> !cla.getName().contains(BeanFactory.CGLIB_TAG)).collect(Collectors.toList());
             //如果发现多个实现，这里不能进行处理了
             if (classList != null && classList.size() >= 2) {
-                logger.warn(fieldClass.getName() + " classImplList is not the only");
+                logger.warn(aclassz.getName() + " classImplList is not the only");
                 return null;
             }
             //找到唯一的实现类
@@ -363,12 +361,8 @@ public class BeanFactory {
         }
         //找到属于@Component的类
         aclass = getBeansClass(aclass);
-        if (null == aclass) {
-            aclass = fieldClass;
-        }
-        if (!aclass.equals(fieldClass)) {
-            logger.info(fieldClass.getName() + " 替换为 " + aclass.getName());
-        }
+        if (null == aclass) aclass = aclassz;
+        if (!aclass.isAssignableFrom(aclassz)) logger.info(aclassz.getName() + " 替换为 " + aclass.getName());
         return aclass;
     }
 }
