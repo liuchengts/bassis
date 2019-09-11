@@ -1,6 +1,6 @@
 package com.bassis.bean;
 
-import com.bassis.bean.annotation.Scope;
+import com.bassis.bean.annotation.Component;
 import com.bassis.bean.annotation.impl.AutowiredImpl;
 import com.bassis.bean.common.Bean;
 import com.bassis.bean.common.enums.ScopeEnum;
@@ -101,7 +101,9 @@ public class BeanFactory {
      * @return 单实例为true 多实例为false
      */
     public static boolean isScopeSingleton(Class<?> aclass) {
-        return !aclass.isAnnotationPresent(Scope.class) || !aclass.getAnnotation(Scope.class).value().equals(ScopeEnum.PROTOTYPE);
+        //不属于 @Component 标记为多实例
+        if(!aclass.isAssignableFrom(Component.class)) return false;
+        return aclass.getAnnotation(Component.class).scope().equals(ScopeEnum.SINGLETON);
     }
 
     /**

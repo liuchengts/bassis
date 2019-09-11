@@ -1,6 +1,7 @@
 package com.bassis.boot.web.annotation.impl;
 
 import com.bassis.bean.Scanner;
+import com.bassis.bean.annotation.Component;
 import com.bassis.boot.web.annotation.Controller;
 import com.bassis.boot.web.annotation.RequestMapping;
 import com.bassis.boot.web.annotation.RequestParam;
@@ -90,6 +91,7 @@ public class ControllerImpl {
     private static void analyse(Class<?> clz) {
         logger.debug(clz.getName());
         Controller annotation = clz.getAnnotation(Controller.class);
+        Controller.class.getAnnotation(Component.class);
         String path = annotation.value();
         // 如果没有给定注解值 那么让它以当前包的上级包路径+控制器名称 为请求路径 如 org.modao.controllers.Test
         // 请求路径为 /controllers/Test
