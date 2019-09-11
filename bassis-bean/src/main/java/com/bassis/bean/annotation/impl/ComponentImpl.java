@@ -28,7 +28,7 @@ public class ComponentImpl {
     private ComponentImpl() {
     }
 
-    public static  ComponentImpl getInstance() {
+    public static ComponentImpl getInstance() {
         return LazyHolder.INSTANCE;
     }
 

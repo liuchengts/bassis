@@ -45,12 +45,14 @@ public class BeanFactory {
     private static final Map<Class<?>, Bean> singletonFactories = new ConcurrentHashMap<>(16);
 
     public static final String CGLIB_TAG = "$$EnhancerByCGLIB$$";
+    static AutowiredImpl autowired;
 
     static {
         //初始化bean拷贝器
         CachedBeanCopier.getInstance();
         //初始化全局事件组件
         ApplicationEventPublisher.getInstance();
+        autowired = AutowiredImpl.getInstance();
     }
 
     /**
@@ -66,6 +68,7 @@ public class BeanFactory {
         ComponentImpl.getInstance();
         //将剩下没有循环依赖的bean放入存储器
         getInstance().addBeanSingletonFactories();
+        ApplicationEventPublisher.addListener(autowired);
         //发布资源就绪事件
         ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
         return getInstance();
@@ -128,22 +131,13 @@ public class BeanFactory {
             //将这个bean放入一级缓存
             addBean(bean);
             singletonFactories.remove(aclass);
-
-            if (aclass.getName().equals("com.bassis.bean.test.service.impl.TestService4Impl"))
-                logger.debug(">>>>>>>>>>> TestService4Impl 第三阶段 选择");
-
         } else {
-
-            if (aclass.getName().equals("com.bassis.bean.test.service.impl.TestService4Impl"))
-                logger.debug(">>>>>>>>>>> TestService4Impl 第一阶段 创建");
-
             //创建一个待初始化的bean放入二级缓存
             Bean bean = new Bean(ProxyFactory.invoke(aclass));
             singletonFactories.put(aclass, bean);
             //检测资源注入,并且加入事件
-            AutowiredImpl autowired = new AutowiredImpl();
-            ApplicationEventPublisher.addListener(autowired);
             autowired.analyseFields(bean.getObject(), true);
+            ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
         }
     }
 
@@ -321,20 +315,11 @@ public class BeanFactory {
     public Bean createBean(Class<?> aclass) {
         //检测接口的实现
         Class<?> classt = this.getComponentClass(aclass);
+        //未新创建之前的数量
+        int count = getBeanList(classt).size();
         newBeanTask(classt);
-        int index = 0;
-        while (index <= 3) {
-            if (!isBean(classt)) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                index++;
-            } else {
-                break;
-            }
-        }
+        //已经有实例了并且是多实例
+        if (getBeanList(classt).size() <= count && !isScopeSingleton(classt)) newBeanTask(classt);
         return getBeanLast(classt);
     }
 
