@@ -18,6 +18,12 @@ bassis
 # 特别说明
 * 计划将 bassis_web 移除，其web功能重写至 bassis_boot ，同时提供 vertx 或 tomcat 作为对外输出服务支持，以适应不同场景需求。
 
+# 项目演示
+### 演示 web 功能
+* 直接运行 bassis-test 或 bassis-boot下的test部分 即可
+### 演示 bean 功能(只启动框架核心的bean部分)
+* 可以配置启动参数 bassis.start.schema=core 或者直接运行 bassis-bean下的test部分
+
 ## 注意
 
 本框架为手写框架,基于jdk8开发与编译，在低于此版本的jre上运行可能会出现异常。
