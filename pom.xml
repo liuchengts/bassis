@@ -10,7 +10,6 @@
         <module>bassis-tools</module>
         <module>bassis-bean</module>
         <module>bassis-hibernate</module>
-        <module>bassis-web</module>
         <module>bassis-boot</module>
         <module>bassis-test</module>
     </modules>
