@@ -57,13 +57,10 @@ public class BassisServlet extends HttpServlet {
             ServletCookie servletCookie = ServletCookie.init(servletAttribute);
             Class<?> actionCla = ControllerImpl.getMapClass(servletResource.getPath());
             Method method = ControllerImpl.getMapMethod(servletResource.getPath());
-            if (null == actionCla || null == method) {
-                CustomException.throwOut("没有找到资源:" + servletResource.getPath());
-            }
+            if (null == actionCla || null == method) CustomException.throwOut("没有找到资源:" + servletResource.getPath());
             assert method != null;
-            if (method.isVarArgs()) {
+            if (method.isVarArgs())
                 CustomException.throwOut("可变参数:" + servletResource.getPath() + " method:" + method.getName());
-            }
             List<Object> parameters = ControllerImpl.getMapParameter(method);
             //请求参数值，参数值类型
             Map<Object, Object> mapParameters = new LinkedHashMap<>();
