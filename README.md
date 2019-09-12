@@ -71,8 +71,6 @@ bassis
 * 默认基本启动配置
 * 默认filter及编码filter
 * 默认servlet容器
-
-### bassis_web
 * @Controller 实现
 * 请求路径自动匹配bean实现
 * @Interceptor及Interceptor栈实现
