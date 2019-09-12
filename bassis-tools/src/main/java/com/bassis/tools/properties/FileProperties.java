@@ -1,30 +1,26 @@
 package com.bassis.tools.properties;
 
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.reflex.ReflexUtils;
 
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 文件读取器
  */
 public class FileProperties extends Properties {
     private static FileProperties properties;
-    private static Map<String, String> map = new HashMap<>();
-    private static Map<String, String> map_name = new HashMap<>();
-    private static Map<String, String> map_flesh = new HashMap<>();
-    private ListEnumerationAdapter<Object> keyList = new ListEnumerationAdapter<>();
+    private static final Map<String, String> map = new ConcurrentHashMap<>(8);
+    private static final Map<String, String> map_name = new ConcurrentHashMap<>(6);
+    private static final Map<String, String> map_flesh = new ConcurrentHashMap<>(6);
+    private final ListEnumerationAdapter<Object> keyList = new ListEnumerationAdapter<>();
 
     private FileProperties() {
     }
@@ -50,15 +46,17 @@ public class FileProperties extends Properties {
      * @return 返回读取的value
      */
     public static String getProperties(String key) {
+        if (!map.containsKey(key)) return null;
         return map.get(key);
     }
 
     /******
-     *map方式读取 key需带上文件名 如 db2.dataSource.driverClassName
+     * map方式读取 key需带上文件名 如 db2.dataSource.driverClassName
      * @param key 读取的key值（文件名.具体的key值）
      * @return 返回读取的value
      */
     public static String getPropertiesName(String key) {
+        if (!map_name.containsKey(key)) return null;
         return map_name.get(key);
     }
 
@@ -69,6 +67,7 @@ public class FileProperties extends Properties {
      * @return 返回读取的value
      */
     public static String getPropertiesFlesh(String key) {
+        if (!map_flesh.containsKey(key)) return null;
         return map_flesh.get(key);
     }
 
@@ -77,15 +76,27 @@ public class FileProperties extends Properties {
      *
      * @param path 要读取的文件路径
      */
-    public void read(String path) {
+    public synchronized void read(String path) {
         try {
             InputStream is = this.getClass().getResourceAsStream(path);
+            if (null == is) {
+                is = new FileInputStream(new File(path));
+            }
             this.load(is);
         } catch (FileNotFoundException e) {
             CustomException.throwOut("指定文件不存在", e);
         } catch (IOException e) {
             CustomException.throwOut("文件读取IO异常", e);
         }
+        mapProperties(path);
+    }
+
+    /**
+     * 存储
+     *
+     * @param path 文件路径
+     */
+    private void mapProperties(String path) {
         try {
             String key = "", value = "";
             String str = "properties";
@@ -195,8 +206,6 @@ public class FileProperties extends Properties {
                 BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(os, charset));
                 this.store(bw, null);
                 bw.close();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -251,7 +260,7 @@ public class FileProperties extends Properties {
             return false;
 
         for (String s : keys) {
-            if (false == properties.containsKey(s)) {
+            if (!properties.containsKey(s)) {
                 return false;
             } else if (null == properties.getProperty(s)) {
                 return false;
@@ -272,9 +281,6 @@ public class FileProperties extends Properties {
 
         if (!properties.containsKey(key)) {
             return false;
-        } else if (null == properties.getProperty(key)) {
-            return false;
-        }
-        return true;
+        } else return null != properties.getProperty(key);
     }
 }

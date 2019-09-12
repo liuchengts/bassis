@@ -20,9 +20,10 @@ public class ProxyFactory {
         // 判断接口与类
         if (target.isInterface()) {
             // 接口 调用jdk工厂
-            logger.debug("使用jdk工厂");
+            logger.debug("使用jdk工厂 " + target.getName());
             factory = JDKProxy.getInstance(target);
         } else {
+            logger.debug("使用cglib工厂 " + target.getName());
             factory = CglibProxy.getInstance(target);
         }
         return factory;
@@ -53,7 +54,6 @@ public class ProxyFactory {
      * @return 代理对象
      */
     public static Object invoke(Object obj) {
-        logger.debug("使用cglib工厂");
         return CglibProxy.getInstance(obj);
     }
 

@@ -29,7 +29,7 @@ public class Scanner {
     private Scanner() {
     }
 
-    public static final Scanner getInstance() {
+    public static  Scanner getInstance() {
         return Scanner.LazyHolder.INSTANCE;
     }
 

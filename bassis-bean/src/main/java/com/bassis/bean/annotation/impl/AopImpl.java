@@ -61,23 +61,31 @@ public class AopImpl {
                 parameters.addAll(Arrays.asList(pAnnotation));
             }
             if (objects.length >= 1) {
-                parameters.addAll(Arrays.asList(objects));
+                //检测参数可用
+                for (Object p : objects) {
+                    if (null == p) {
+                        parameters.add("null");
+                    } else {
+                        parameters.add(p);
+                    }
+                }
             }
             aopParameters = parameters.toArray();
             Set<Method> methods = null;
-            if (null != aclass) {
-                Map<Method, Boolean> mapMethods = ComponentImpl.getBeanAllMethods(aclass);
-                if (!mapMethods.isEmpty()) {
-                    methods = mapMethods.keySet();
-                }
-                if (null == methods) logger.warn(position + " @AopService aclass is null");
-            } else if (!StringUtils.isEmptyString(value)) {
-                aclass = ComponentImpl.getBeansClass(value);
-                Map<Method, Boolean> mapMethods = ComponentImpl.getBeanAllMethods(value);
+            if (!StringUtils.isEmptyString(value)) {
+                aclass = ComponentImpl.getClassByName(value);
+                Map<Method, Boolean> mapMethods = ComponentImpl.getClassAllMethods(value);
+                assert mapMethods != null;
                 if (!mapMethods.isEmpty()) {
                     methods = mapMethods.keySet();
                 }
                 if (null == methods) logger.warn(position + " @AopService value is null");
+            } else if (!aclass.isAssignableFrom(Aop.class)) {
+                Map<Method, Boolean> mapMethods = ComponentImpl.getClassAllMethods(aclass);
+                if (!mapMethods.isEmpty()) {
+                    methods = mapMethods.keySet();
+                }
+                if (null == methods) logger.warn(position + " @AopService aclass is null");
             } else {
                 CustomException.throwOut(position + " @AopService error invalid parameter");
             }
@@ -87,10 +95,11 @@ public class AopImpl {
             if (null == methods) {
                 CustomException.throwOut(position + " @AopService methods is null , aop exit");
             }
+            assert aclass != null;
+            //TODO  这里需要将代理更改为beanfactory,需要有注入能力
             this.aopObject = ProxyFactory.invoke(aclass);
-            methods.forEach(m -> {
-                match(Reflection.getMethod(true, aopService, m.getName(), m.getParameterTypes()));
-            });
+            assert methods != null;
+            methods.forEach(m -> match(Reflection.getMethod(true, aopService, m.getName(), m.getParameterTypes())));
             if (null == preHandle
                     || null == postHandle
                     || null == afterCompletion) {

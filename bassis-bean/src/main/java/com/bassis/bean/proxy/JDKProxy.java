@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 基于接口的代理
@@ -18,6 +20,16 @@ public class JDKProxy implements InvocationHandler {
     private Class<?> target;
     //代理得到的对象
     private Object proxy;
+    //带aop的方法
+    private Set<Method> beanAopMethods = new HashSet<>();
+
+    public Set<Method> getBeanAopMethods() {
+        return beanAopMethods;
+    }
+
+    public void setBeanAopMethods(Set<Method> beanAopMethods) {
+        this.beanAopMethods = beanAopMethods;
+    }
 
     public Class<?> getTarget() {
         return target;
@@ -82,7 +94,7 @@ public class JDKProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Object result = null;
-        boolean isAop = AopImpl.isAop(method);
+        boolean isAop = this.getBeanAopMethods().contains(method);
         if (isAop) {
             //初始化aop
             AopImpl aop = new AopImpl();

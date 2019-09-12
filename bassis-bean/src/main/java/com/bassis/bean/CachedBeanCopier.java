@@ -1,6 +1,5 @@
 package com.bassis.bean;
 
-import com.bassis.bean.common.Bean;
 import net.sf.cglib.beans.BeanCopier;
 import org.apache.log4j.Logger;
 
@@ -20,7 +19,7 @@ public class CachedBeanCopier {
     private CachedBeanCopier() {
     }
 
-    public static final CachedBeanCopier getInstance() {
+    public static  CachedBeanCopier getInstance() {
         return CachedBeanCopier.LazyHolder.INSTANCE;
     }
 

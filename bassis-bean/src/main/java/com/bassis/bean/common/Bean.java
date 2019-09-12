@@ -10,19 +10,19 @@ public class Bean implements Serializable {
     /**
      * 已经创建的实际对象
      */
-    Object object;
+    volatile Object object;
     /**
      * 存储索引
      */
-    Integer index;
+    volatile Integer index;
     /**
      * 原始版本
      */
-    long ov;
+    volatile long ov;
     /**
-     * 当前版本
+     * 当前版本 发生setObject 或 setIndex时计数器+1
      */
-    long cv;
+    volatile long cv;
 
     public Object getObject() {
         return object;
@@ -53,6 +53,12 @@ public class Bean implements Serializable {
     public Bean(Object object, Integer index) {
         this.object = object;
         this.index = index;
+        this.cv = this.ov = 1;
+    }
+
+    public Bean(Object object) {
+        this.object = object;
+        this.index = 1;
         this.cv = this.ov = 1;
     }
 

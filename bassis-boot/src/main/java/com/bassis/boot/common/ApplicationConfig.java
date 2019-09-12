@@ -14,7 +14,6 @@ public class ApplicationConfig implements Serializable {
      */
     Class aClass;
 
-
     //######默认参数
     /**
      * 启动端口 默认
@@ -27,8 +26,15 @@ public class ApplicationConfig implements Serializable {
     /**
      * 请求路径后缀 默认
      */
-    String urlPattern = "/";
-
+    String urlPattern = "";
+    /**
+     * 请求系统服务路径后缀 默认
+     */
+    String urlSysPattern = "/system";
+    /**
+     * 框架启动模式 默认
+     */
+    String startSchema = Declaration.startSchemaAll;
 
     //######自动配置参数
     //自动生成
@@ -90,10 +96,26 @@ public class ApplicationConfig implements Serializable {
         this.contextPath = contextPath;
     }
 
-    public void rootClass(Class aClass, Class bassisCla) {
+    public String getUrlSysPattern() {
+        return urlSysPattern;
+    }
+
+    public void setUrlSysPattern(String urlSysPattern) {
+        this.urlSysPattern = urlSysPattern;
+    }
+
+    public String getStartSchema() {
+        return startSchema;
+    }
+
+    public void setStartSchema(String startSchema) {
+        this.startSchema = startSchema;
+    }
+
+    public void rootClass(Class aClass) {
         this.scanRoot = aClass.getPackage().getName();
         this.aClass = aClass;
-        this.servletName = bassisCla.getSimpleName();
+        this.servletName = aClass.getSimpleName();
     }
 
 
