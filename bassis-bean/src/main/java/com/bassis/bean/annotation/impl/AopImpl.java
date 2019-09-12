@@ -73,15 +73,15 @@ public class AopImpl {
             aopParameters = parameters.toArray();
             Set<Method> methods = null;
             if (!StringUtils.isEmptyString(value)) {
-                aclass = ComponentImpl.getBeansClass(value);
-                Map<Method, Boolean> mapMethods = ComponentImpl.getBeanAllMethods(value);
+                aclass = ComponentImpl.getClassByName(value);
+                Map<Method, Boolean> mapMethods = ComponentImpl.getClassAllMethods(value);
                 assert mapMethods != null;
                 if (!mapMethods.isEmpty()) {
                     methods = mapMethods.keySet();
                 }
                 if (null == methods) logger.warn(position + " @AopService value is null");
             } else if (!aclass.isAssignableFrom(Aop.class)) {
-                Map<Method, Boolean> mapMethods = ComponentImpl.getBeanAllMethods(aclass);
+                Map<Method, Boolean> mapMethods = ComponentImpl.getClassAllMethods(aclass);
                 if (!mapMethods.isEmpty()) {
                     methods = mapMethods.keySet();
                 }

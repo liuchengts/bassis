@@ -1,6 +1,5 @@
 package com.bassis.bean;
 
-import com.bassis.bean.annotation.Component;
 import com.bassis.bean.annotation.impl.AutowiredImpl;
 import com.bassis.bean.common.Bean;
 import com.bassis.bean.common.enums.ScopeEnum;
@@ -80,8 +79,8 @@ public class BeanFactory {
      * @param name bean别名
      * @return 返回class
      */
-    public static Class<?> getBeansClass(String name) {
-        return ComponentImpl.getBeansClass(name);
+    public  Class<?> getBeansClass(String name) {
+        return ComponentImpl.getClassByName(name);
     }
 
     /**
@@ -90,21 +89,21 @@ public class BeanFactory {
      * @param clz bean的class
      * @return 返回class
      */
-    public static Class<?> getBeansClass(Class<?> clz) {
-        return ComponentImpl.getBeansClass(clz);
+    public  Class<?> getBeansClass(Class<?> clz) {
+        return ComponentImpl.getClassByClass(clz);
     }
 
     /**
-     * 检查class是否带有范围注解 默认为单实例
+     * /**
+     * 增加一个没有Component注解的class为 Component
      *
-     * @param aclass 要检测的class
-     * @return 单实例为true 多实例为false
+     * @param clz       class实例
+     * @param scopeEnum class实例范围
      */
-    public static boolean isScopeSingleton(Class<?> aclass) {
-        //不属于 @Component 标记为多实例
-        if(!aclass.isAssignableFrom(Component.class)) return false;
-        return aclass.getAnnotation(Component.class).scope().equals(ScopeEnum.SINGLETON);
+    public void addComponent(Class<?> clz, ScopeEnum scopeEnum) {
+        ComponentImpl.addComponent(clz, scopeEnum);
     }
+
 
     /**
      * 检查class是否存在已创建好的bean
@@ -112,7 +111,7 @@ public class BeanFactory {
      * @param aclass 要检测的class
      * @return 已存在bean为true 否则为false
      */
-    public static boolean isBean(Class<?> aclass) {
+    public  boolean isBean(Class<?> aclass) {
         return objectBeanStorage.containsKey(aclass);
     }
 
@@ -123,7 +122,7 @@ public class BeanFactory {
      * @param aclass 要创建的class
      */
     public synchronized void newBeanTask(Class<?> aclass) {
-        if (isBean(aclass) && isScopeSingleton(aclass)) {
+        if (isBean(aclass) && ComponentImpl.isScopeSingleton(aclass)) {
             //第一阶段，检测一级缓存中是否已存在当前aclass
             //存在bean
         } else if (singletonFactories.containsKey(aclass)) {
@@ -237,7 +236,7 @@ public class BeanFactory {
      * @return 返回获得的bean
      */
     public Bean getBeanFirst(String name) {
-        return getBeanFirst(ComponentImpl.getBeansClass(name));
+        return getBeanFirst(ComponentImpl.getClassByName(name));
     }
 
     /**
@@ -247,7 +246,7 @@ public class BeanFactory {
      * @return 返回获得的bean
      */
     public Bean getBeanLast(String name) {
-        return getBeanLast(ComponentImpl.getBeansClass(name));
+        return getBeanLast(ComponentImpl.getClassByName(name));
     }
 
     /**
@@ -275,7 +274,7 @@ public class BeanFactory {
      * @return 返回获得的bean
      */
     public Bean getByIndexBean(String name, int index) {
-        return getByIndexBean(ComponentImpl.getBeansClass(name), index);
+        return getByIndexBean(ComponentImpl.getClassByName(name), index);
     }
 
     /**
@@ -321,7 +320,7 @@ public class BeanFactory {
         int count = getBeanList(classt).size();
         newBeanTask(classt);
         //已经有实例了并且是多实例
-        if (getBeanList(classt).size() <= count && !isScopeSingleton(classt)) newBeanTask(classt);
+        if (getBeanList(classt).size() <= count && !ComponentImpl.isScopeSingleton(classt)) newBeanTask(classt);
         return getBeanLast(classt);
     }
 

@@ -66,7 +66,7 @@ public class CglibProxy implements MethodInterceptor {
     public static Object getInstance(Class clazz) {
         CglibProxy _proxy = new CglibProxy();
         _proxy.setTarget(clazz);
-        _proxy.setBeanAopMethods(ComponentImpl.getBeanAopMethods(_proxy.getTarget()));
+        _proxy.setBeanAopMethods(ComponentImpl.getClassAopMethods(_proxy.getTarget()));
         return _proxy.newProxy();
     }
 
@@ -81,7 +81,7 @@ public class CglibProxy implements MethodInterceptor {
     public static Object getInstance(Object obj) {
         CglibProxy _proxy = new CglibProxy();
         _proxy.setTarget(obj.getClass());
-        _proxy.setBeanAopMethods(ComponentImpl.getBeanAopMethods(_proxy.getTarget()));
+        _proxy.setBeanAopMethods(ComponentImpl.getClassAopMethods(_proxy.getTarget()));
         return _proxy.newProxy();
     }
 

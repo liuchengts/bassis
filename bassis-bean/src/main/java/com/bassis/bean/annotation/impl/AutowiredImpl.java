@@ -76,9 +76,9 @@ public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
             //优先从注解属性中获取
             if (!ReflexUtils.isWrapClass(cla.getName())) {
                 //不是基础类型
-                if (!StringUtils.isEmptyString(value)) fieldClass = ComponentImpl.getBeansClass(value);
+                if (!StringUtils.isEmptyString(value)) fieldClass = beanFactory.getBeansClass(value);
                 if (null == fieldClass && !aclass.isAssignableFrom(Autowired.class))
-                    fieldClass = ComponentImpl.getBeansClass(aclass);
+                    fieldClass = beanFactory.getBeansClass(aclass);
             }
             //注解中获取不到时从默认关系中获取
             if (null == fieldClass) fieldClass = beanFactory.getComponentClass(cla);
