@@ -1,7 +1,6 @@
 package com.bassis.boot.web;
 
 import com.bassis.bean.BeanFactory;
-import com.bassis.bean.annotation.Component;
 import com.bassis.bean.common.Bean;
 import com.bassis.bean.event.ApplicationEventPublisher;
 import com.bassis.boot.event.ServletEvent;
@@ -17,10 +16,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.bassis.boot.web.assist.ServletAttribute;
-import com.bassis.boot.web.assist.ServletClient;
-import com.bassis.boot.web.assist.ServletCookie;
-import com.bassis.boot.web.assist.ServletResource;
+import com.bassis.boot.web.assist.*;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
 import org.apache.log4j.Logger;
@@ -53,7 +49,6 @@ public class BassisServlet extends HttpServlet {
 
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        request.setCharacterEncoding("utf-8");
         logger.debug("初始化service资源...");
         try {
             ServletAttribute servletAttribute = ServletAttribute.init(servletContext, request, response);
@@ -89,15 +84,30 @@ public class BassisServlet extends HttpServlet {
             }
             //交由bean进行生产
             Bean bean = beanFactory.createBean(actionCla);
-            logger.info("bean:" + bean.getObject().toString());
             Object resInvoke = Reflection.invokeMethod(bean.getObject(), method, mapParameters.keySet().toArray());
             logger.info("resInvoke : " + resInvoke);
             //清除资源
             beanFactory.removeBean(bean);
+            initView(servletAttribute, servletResource, resInvoke);
         } catch (Exception e) {
             CustomException.throwOut("controller error", e);
         }
         logger.debug("service方法完成");
+    }
+
+    /**
+     * 配置返回视图
+     *
+     * @param servletAttribute
+     * @param servletResource
+     * @param rlt              返回参数
+     * @throws Exception
+     */
+    private static void initView(ServletAttribute servletAttribute, ServletResource servletResource, Object rlt)
+            throws Exception {
+        ServletView servletView = ServletView.init(servletAttribute, servletResource);
+        servletView.setRlt(rlt);
+        servletView.outJson();
     }
 
     public void destroy() {

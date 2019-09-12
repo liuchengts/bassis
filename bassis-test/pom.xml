@@ -17,8 +17,8 @@
 		<!-- 添加web支持 -->
 		<dependency>
 			<groupId>com.bassis.parent</groupId>
-			<artifactId>bassis-web</artifactId>
-			<version>${bassis-web.version}</version>
+			<artifactId>bassis-boot</artifactId>
+			<version>${bassis-boot.version}</version>
 		</dependency>
 	</dependencies>
 </project>
