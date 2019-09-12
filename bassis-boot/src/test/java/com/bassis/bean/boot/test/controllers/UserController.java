@@ -5,8 +5,7 @@ import com.bassis.bean.boot.test.service.UserService;
 import com.bassis.boot.web.annotation.Controller;
 import com.bassis.boot.web.annotation.RequestMapping;
 import com.bassis.boot.web.annotation.RequestParam;
-//@Scope(value = ScopeEnum.PROTOTYPE)
-//@Component
+
 @Controller("/user")
 public class UserController {
     @Autowired

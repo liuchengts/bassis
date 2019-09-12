@@ -1,5 +1,7 @@
 package com.bassis.boot.web.annotation;
 
+import com.bassis.boot.web.common.enums.RequestMethodEnum;
+
 import java.lang.annotation.*;
 
 /**
@@ -10,5 +12,13 @@ import java.lang.annotation.*;
 @Inherited
 @Documented
 public @interface RequestMapping {
-	 String value()  default "";
+    /**
+     * 请求路径
+     */
+    String value() default "";
+
+    /**
+     * 请求方式
+     */
+    RequestMethodEnum[] method() default {};
 }
