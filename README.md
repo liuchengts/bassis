@@ -27,7 +27,7 @@ bassis
 *  bassis_bean   bassis_tools 基础依赖
 *  bassis_boot   bassis_bean 基础依赖
 *  bassis_data   bassis_bean 基础依赖
-详细情况请参见具体的pom.xml
+*  详细情况请参见具体的pom.xml
 
 ## 用到的第三方jar包：
 
