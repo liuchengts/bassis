@@ -7,30 +7,20 @@
         <version>1-SNAPSHOT</version>
         <relativePath/>
     </parent>
-    <artifactId>bassis-hibernate</artifactId>
+    <artifactId>bassis-data</artifactId>
     <version>1-SNAPSHOT</version>
-    <name>bassis-hibernate</name>
-    <description>bassis-hibernate操作支持</description>
+    <name>bassis-data</name>
+    <description>bassis-data数据操作</description>
     <dependencies>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-c3p0</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.bassis.parent</groupId>
-            <artifactId>bassis-tools</artifactId>
-            <version>${bassis-tools.version}</version>
+            <artifactId>bassis-bean</artifactId>
+            <version>${bassis-bean.version}</version>
         </dependency>
     </dependencies>
 </project>
