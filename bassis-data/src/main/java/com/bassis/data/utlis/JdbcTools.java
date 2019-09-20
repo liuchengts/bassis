@@ -1,5 +1,6 @@
 package com.bassis.data.utlis;
 
+import com.bassis.data.common.DBConfig;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.string.StringUtils;
 
@@ -14,31 +15,35 @@ import java.sql.Savepoint;
  * jdbc实际操作类
  */
 public class JdbcTools {
+    //连接
     private Connection conn;
+    //事务锚点
     private Savepoint sp;
-    private String driver;
-    private String url;
-    private String username;
-    private String password;
+    //是否支持数据保存
     private Boolean savepoints;
+    //数据库连接配置
+    private DBConfig dbConfig;
+    //当前操作单元的唯一标记
     private String no;
 
     protected String getNo() {
         return no;
     }
 
+    protected void setNo(String no) {
+        this.no = no;
+    }
+
+    public DBConfig getDbConfig() {
+        return dbConfig;
+    }
+
     /*********
      * 初始化操作器
-     * @param jdbcUrl jdbc连接地址
-     * @param userName 用户名
-     * @param passWord 密码
+     * @param dbConfig db配置
      */
-    protected JdbcTools(String no,String jdbcUrl, String userName, String passWord, String drivers) {
-        this.no = no;
-        this.url = jdbcUrl;
-        this.username = userName;
-        this.password = passWord;
-        this.driver = drivers;
+    protected JdbcTools(DBConfig dbConfig) {
+        this.dbConfig = dbConfig;
     }
 
     private JdbcTools() {
@@ -49,17 +54,17 @@ public class JdbcTools {
      */
     protected Connection initConnection() {
         if (this.conn != null) return this.conn;
-        if (StringUtils.isEmptyString(this.url) || StringUtils.isEmptyString(this.username) || StringUtils.isEmptyString(this.password))
+        if (StringUtils.isEmptyString(dbConfig.getJdbcUrl()) || StringUtils.isEmptyString(dbConfig.getUserName()) || StringUtils.isEmptyString(dbConfig.getPassWord()))
             CustomException.throwOut("数据库连接参数错误");
 
         try {
             //加载驱动类
-            Class.forName(this.driver);
+            Class.forName(dbConfig.getDrivers());
         } catch (ClassNotFoundException e) {
             CustomException.throwOut("数据库驱动加载异常:", e);
         }
         try {
-            this.conn = DriverManager.getConnection(this.url, this.username, this.password);
+            this.conn = DriverManager.getConnection(dbConfig.getJdbcUrl(), dbConfig.getUserName(), dbConfig.getPassWord());
             this.savepoints = this.conn.getMetaData().supportsSavepoints();
             setAutoCommit(false);
         } catch (SQLException e) {
@@ -148,4 +153,5 @@ public class JdbcTools {
             CustomException.throwOut("关闭连接失败:", e);
         }
     }
+
 }
