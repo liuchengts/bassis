@@ -4,23 +4,20 @@
     <parent>
         <groupId>com.bassis.parent</groupId>
         <artifactId>bassis-parent</artifactId>
-        <version>1-SNAPSHOT</version>
-        <relativePath/>
+        <version>0.0.1-SNAPSHOT</version>
     </parent>
     <artifactId>bassis-data</artifactId>
-    <version>1-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>bassis-data</name>
     <description>bassis-data数据操作</description>
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
         </dependency>
         <dependency>
             <groupId>com.bassis.parent</groupId>
             <artifactId>bassis-bean</artifactId>
-            <version>${bassis-bean.version}</version>
         </dependency>
     </dependencies>
 </project>

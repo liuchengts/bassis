@@ -4,11 +4,10 @@
 	<parent>
 		<groupId>com.bassis.parent</groupId>
 		<artifactId>bassis-parent</artifactId>
-		<version>1-SNAPSHOT</version>
-		<relativePath/>
+		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>bassis-test</artifactId>
-	<version>1-SNAPSHOT</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>bassis-test</name>
 	<description>bassis测试</description>
@@ -18,7 +17,6 @@
 		<dependency>
 			<groupId>com.bassis.parent</groupId>
 			<artifactId>bassis-boot</artifactId>
-			<version>${bassis-boot.version}</version>
 		</dependency>
 	</dependencies>
 </project>
