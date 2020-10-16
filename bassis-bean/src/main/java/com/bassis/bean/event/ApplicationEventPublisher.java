@@ -27,7 +27,7 @@ public class ApplicationEventPublisher {
      * @param listener 要添加的事件
      */
     public static synchronized void addListener(ApplicationListener listener) {
-        Class<?> aclass = Reflection.getT(listener.getClass(), 1);
+        Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
         CopyOnWriteArraySet<ApplicationListener> listenerSet = new CopyOnWriteArraySet<>();
         if (listeners.containsKey(aclass)) {
             listenerSet = listeners.get(aclass);
@@ -42,7 +42,7 @@ public class ApplicationEventPublisher {
      * @param listener 要移除的事件
      */
     public static synchronized void removeListener(ApplicationListener listener) {
-        Class<?> aclass = Reflection.getT(listener.getClass(), 1);
+        Class<?> aclass = Reflection.getInterfaceT(listener.getClass(), 1);
         if (!listeners.containsKey(aclass)) return;
         CopyOnWriteArraySet<ApplicationListener> listenerSet = new CopyOnWriteArraySet<>();
         if (!listenerSet.contains(listener)) return;
