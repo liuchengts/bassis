@@ -109,6 +109,21 @@ public class Reflection {
     }
 
     /**
+     * 获取泛型 这里一般被代理创建的方法使用
+     *
+     * @param aclass 要获取的接口
+     * @param index  第几个泛型 默认第一个,下标从1开始
+     * @return 返回获取的泛型
+     */
+    public static Class<?> getT(Class<?> aclass, int index) {
+        try {
+            return getInterfaceT(aclass, index);
+        } catch (Exception e) {
+            return getClassT(aclass, index);
+        }
+    }
+
+    /**
      * 获取接口上的泛型
      *
      * @param aclass 要获取的接口
