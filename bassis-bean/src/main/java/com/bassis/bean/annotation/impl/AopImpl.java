@@ -6,7 +6,8 @@ import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
 import com.bassis.tools.string.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -17,7 +18,7 @@ import java.util.*;
  * @see Aop
  */
 public class AopImpl {
-    private static Logger logger = Logger.getLogger(AopImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(AopImpl.class);
 
     public static final String PREHANDLE_NAME = "preHandle";// 前置
     public static final String POSTHANDLE_NAME = "postHandle";// 后置

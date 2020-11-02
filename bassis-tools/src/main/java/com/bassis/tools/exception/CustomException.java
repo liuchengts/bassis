@@ -1,6 +1,8 @@
 package com.bassis.tools.exception;
 
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 自定义异常类
@@ -8,7 +10,7 @@ import org.apache.log4j.Logger;
 public class CustomException extends Exception {
 
     private static final long serialVersionUID = 1L;
-    private static Logger logger = Logger.getLogger(CustomException.class);
+    private static Logger logger = LoggerFactory.getLogger(CustomException.class);
 
     private CustomException() {
     }
@@ -29,7 +31,7 @@ public class CustomException extends Exception {
     }
 
     public static void throwOut(Throwable cause) {
-        logger.error(cause);
+        logger.error(cause.getMessage(), cause);
         throw new RuntimeException(cause);
     }
 }

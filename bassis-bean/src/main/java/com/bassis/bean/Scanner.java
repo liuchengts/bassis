@@ -1,8 +1,9 @@
 package com.bassis.bean;
 
-import org.apache.log4j.Logger;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.ReflexUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +21,7 @@ import java.util.jar.JarFile;
  * 扫描器
  */
 public class Scanner {
-    private  static Logger logger = Logger.getLogger(Scanner.class);
+    private static Logger logger = LoggerFactory.getLogger(Scanner.class);
 
     private static class LazyHolder {
         private static final Scanner INSTANCE = new Scanner();
@@ -29,7 +30,7 @@ public class Scanner {
     private Scanner() {
     }
 
-    public static  Scanner getInstance() {
+    public static Scanner getInstance() {
         return Scanner.LazyHolder.INSTANCE;
     }
 
@@ -175,7 +176,7 @@ public class Scanner {
         File dir = new File(packagePath);
         // 如果不存在或者 也不是目录就直接返回
         if (!dir.exists() || !dir.isDirectory()) {
-            logger.warn("用户定义包名 " + packageName + " 下没有任何文件");
+            logger.warn("用户定义包名 :{} 下没有任何文件", packageName);
             return;
         }
         // 如果存在 就获取包下的所有文件 包括目录

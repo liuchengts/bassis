@@ -5,7 +5,8 @@ import com.bassis.bean.annotation.impl.ComponentImpl;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ import java.util.Set;
  * 基于cglib类的代理
  */
 public class CglibProxy implements MethodInterceptor {
-    private static Logger logger = Logger.getLogger(CglibProxy.class);
+    private static Logger logger = LoggerFactory.getLogger(CglibProxy.class);
     //代理的class类
     private Class<?> target;
     //代理得到的对象

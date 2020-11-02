@@ -4,9 +4,10 @@ import com.bassis.bean.BeanFactory;
 import com.bassis.bean.Scanner;
 import com.bassis.bean.annotation.Component;
 import com.bassis.bean.common.enums.ScopeEnum;
-import org.apache.log4j.Logger;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.string.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
  * @see Component
  */
 public class ComponentImpl {
-    private static Logger logger = Logger.getLogger(ComponentImpl.class);
+    private static Logger logger = LoggerFactory.getLogger(ComponentImpl.class);
     private static BeanFactory beanFactory = BeanFactory.getInstance();
 
     private static class LazyHolder {

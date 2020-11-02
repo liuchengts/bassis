@@ -2,8 +2,8 @@ package com.bassis.bean.proxy;
 
 
 import com.bassis.bean.annotation.impl.AopImpl;
-import com.bassis.tools.exception.CustomException;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,7 +15,7 @@ import java.util.Set;
  * 基于接口的代理
  */
 public class JDKProxy implements InvocationHandler {
-    private static Logger logger = Logger.getLogger(CglibProxy.class);
+    private static Logger logger = LoggerFactory.getLogger(CglibProxy.class);
     //代理的class类
     private Class<?> target;
     //代理得到的对象

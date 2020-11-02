@@ -1,12 +1,13 @@
 package com.bassis.bean.proxy;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 代理工厂类
  */
 public class ProxyFactory {
-    private static Logger logger = Logger.getLogger(ProxyFactory.class);
+    private static Logger logger = LoggerFactory.getLogger(ProxyFactory.class);
 
     /**
      * 代理模式

@@ -1,7 +1,8 @@
 package com.bassis.bean;
 
 import net.sf.cglib.beans.BeanCopier;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * cglib obj对象拷贝器
  */
 public class CachedBeanCopier {
-    private static Logger logger = Logger.getLogger(BeanFactory.class);
+    private static Logger logger = LoggerFactory.getLogger(BeanFactory.class);
 
     private static class LazyHolder {
         private static final CachedBeanCopier INSTANCE = new CachedBeanCopier();

@@ -7,13 +7,14 @@ import java.util.concurrent.Executors;
 
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 并发测试包
  */
 public class Concurrent {
-    private static Logger logger = Logger.getLogger(Concurrent.class);
+    private static Logger logger = LoggerFactory.getLogger(Concurrent.class);
     final static ExecutorService service = Executors.newCachedThreadPool();
 
     /**

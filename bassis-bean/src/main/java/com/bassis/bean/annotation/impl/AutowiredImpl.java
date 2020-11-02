@@ -6,10 +6,11 @@ import com.bassis.bean.common.Bean;
 import com.bassis.bean.common.FieldBean;
 import com.bassis.bean.event.ApplicationListener;
 import com.bassis.bean.event.domain.AutowiredEvent;
-import org.apache.log4j.Logger;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -21,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see Autowired
  */
 public class AutowiredImpl implements ApplicationListener<AutowiredEvent> {
-    private final static Logger logger = Logger.getLogger(AutowiredImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(AutowiredImpl.class);
     private final BeanFactory beanFactory = BeanFactory.getInstance();
     private final List<FieldBean> fieldBeans = new CopyOnWriteArrayList<>();
 

@@ -2,11 +2,12 @@ package com.bassis.bean.test;
 
 import com.bassis.bean.annotation.Aop;
 import com.bassis.bean.annotation.Component;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Component
 public class TestComponent {
-    static Logger logger = Logger.getLogger(TestComponent.class);
+    static Logger logger = LoggerFactory.getLogger(TestComponent.class);
 
     @Aop(aclass = TestAopServiceImpl.class, parameters = {"a", "b", "c"})
     public String tc(String name,String ip) {
