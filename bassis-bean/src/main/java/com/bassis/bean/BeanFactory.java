@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 /**
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 public class BeanFactory {
 
     private static Logger logger = LoggerFactory.getLogger(BeanFactory.class);
+    private static final ReentrantLock LOCK = new ReentrantLock();
+    private static final Condition STOP = LOCK.newCondition();
 
     private static class LazyHolder {
         private static final BeanFactory INSTANCE = new BeanFactory();
@@ -71,7 +75,18 @@ public class BeanFactory {
         ApplicationEventPublisher.addListener(autowired);
         //发布资源就绪事件
         ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
+        blockStart();
         return getInstance();
+    }
+
+    /**
+     * 关闭 BeanFactory
+     *
+     * @param millis 延迟关闭的毫秒数
+     */
+    public static void stopBeanFactory(long millis) {
+        //todo 发布资源准备关闭事件
+        blockStop(millis);
     }
 
     /**
@@ -80,7 +95,7 @@ public class BeanFactory {
      * @param name bean别名
      * @return 返回class
      */
-    public  Class<?> getBeansClass(String name) {
+    public Class<?> getBeansClass(String name) {
         return ComponentImpl.getClassByName(name);
     }
 
@@ -90,7 +105,7 @@ public class BeanFactory {
      * @param clz bean的class
      * @return 返回class
      */
-    public  Class<?> getBeansClass(Class<?> clz) {
+    public Class<?> getBeansClass(Class<?> clz) {
         return ComponentImpl.getClassByClass(clz);
     }
 
@@ -112,7 +127,7 @@ public class BeanFactory {
      * @param aclass 要检测的class
      * @return 已存在bean为true 否则为false
      */
-    public  boolean isBean(Class<?> aclass) {
+    public boolean isBean(Class<?> aclass) {
         return objectBeanStorage.containsKey(aclass);
     }
 
@@ -359,5 +374,43 @@ public class BeanFactory {
         if (null == aclass) aclass = aclassz;
         if (!aclass.isAssignableFrom(aclassz)) logger.info(aclassz.getName() + " 替换为 " + aclass.getName());
         return aclass;
+    }
+
+
+    /**
+     * 开始阻塞
+     */
+    static void blockStart() {
+        try {
+            LOCK.lock();
+            logger.info("beanFactory launch successful");
+            STOP.await();
+        } catch (InterruptedException e) {
+            logger.warn(" service   stopped, interrupted by other thread!", e);
+        } finally {
+            LOCK.unlock();
+        }
+    }
+
+    /**
+     * 结束阻塞
+     * 默认延迟100ms
+     *
+     * @param millis 延迟关闭的毫秒数
+     */
+    static void blockStop(long millis) {
+        if (millis <= 0) millis = 100;
+        try {
+            LOCK.lock();
+            try {
+                Thread.sleep(millis);
+            } catch (InterruptedException e) {
+                logger.error("延迟线程异常", e);
+            }
+            logger.info("beanFactory stop successful");
+            STOP.signal();
+        } finally {
+            LOCK.unlock();
+        }
     }
 }
