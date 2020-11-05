@@ -4,7 +4,7 @@
         <!-- encoders are  by default assigned the type
          ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level]-[%class:%line%n%caller] - %m%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level]-[%n%caller] - %m%n</pattern>
             <!-- 常用的Pattern变量 -->
             <!--
             <pattern>
@@ -88,7 +88,7 @@
     <appender name="DEBUG-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/debug.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level]-[%class:%line%n%caller] - %m%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level]-[%n%caller] - %m%n</pattern>
             <charset>UTF-8</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
