@@ -12,7 +12,7 @@ package com.bassis.boot.web.annotation.impl;//package com.bassis.web.annotation.
 // *
 // */
 //public class InterceptorImpl {
-//	private static Logger logger = Logger.getLogger(InterceptorImpl.class);
+//	private static Logger logger = LoggerFactory.getLogger(InterceptorImpl.class);
 //
 //
 //	public static final String PREHANDLE_NAME = "preHandle";// 前置

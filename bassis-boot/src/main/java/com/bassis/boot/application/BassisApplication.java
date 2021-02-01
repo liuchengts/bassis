@@ -7,7 +7,8 @@ import com.bassis.boot.common.ApplicationConfig;
 
 import com.bassis.boot.common.MainArgs;
 import com.bassis.tools.exception.CustomException;
-//import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -15,7 +16,7 @@ import com.bassis.tools.exception.CustomException;
  */
 public class BassisApplication {
     private static final long serialVersionUID = 1L;
-//    static final Logger logger = Logger.getLogger(BassisApplication.class);
+    private static Logger logger = LoggerFactory.getLogger(BassisApplication.class);
     private static ApplicationConfig appApplicationConfig = new ApplicationConfig();
     private static TomcatUtil tomcatUtil = TomcatUtil.getInstance();
     private static MainArgs mainArgs = MainArgs.getInstance();
@@ -52,9 +53,9 @@ public class BassisApplication {
      */
     private static void start() {
         //启动 BeanFactory
-//        logger.debug("BeanFactory start...");
+        logger.debug("BeanFactory start...");
         BeanFactory.startBeanFactory(appApplicationConfig.getScanRoot());
-//        logger.debug("Application startSchema : " + appApplicationConfig.getStartSchema());
+        logger.debug("Application startSchema : " + appApplicationConfig.getStartSchema());
         switch (appApplicationConfig.getStartSchema()) {
             case Declaration.startSchemaWeb:
                 tomcatUtil.start(appApplicationConfig);

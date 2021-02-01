@@ -14,9 +14,10 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.startup.Tomcat;
-//import org.apache.log4j.Logger;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 public class TomcatUtil {
     private static final long serialVersionUID = 1L;
-//    static final Logger logger = Logger.getLogger(TomcatUtil.class);
+    private static Logger logger = LoggerFactory.getLogger(TomcatUtil.class);
 
     private static class LazyHolder {
         private static final TomcatUtil INSTANCE = new TomcatUtil();
@@ -73,10 +74,10 @@ public class TomcatUtil {
         try {
             defaultConfig(mainArgs.getArgs());
             //启动 tomcat
-//            logger.debug("Tomcat start...");
+            logger.debug("Tomcat start...");
             tomcat.start();
-//            logger.info("Tomcat :[" + appApplicationConfig.getServletName() + "] port:[" + appApplicationConfig.getPort() + "] started success");
-//            logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath() + "]");
+            logger.info("Tomcat :[" + appApplicationConfig.getServletName() + "] port:[" + appApplicationConfig.getPort() + "] started success");
+            logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath() + "]");
             server.await();
         } catch (Exception e) {
             CustomException.throwOut(" start [" + Declaration.startSchemaWeb + "] error ", e);
@@ -117,11 +118,11 @@ public class TomcatUtil {
      */
     protected void down() {
         try {
-//            logger.debug("Tomcat " + appApplicationConfig.getServletName() + " stoped !");
+            logger.debug("Tomcat " + appApplicationConfig.getServletName() + " stoped !");
             tomcat.stop();
         } catch (LifecycleException e) {
             e.printStackTrace();
-//            logger.error(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 

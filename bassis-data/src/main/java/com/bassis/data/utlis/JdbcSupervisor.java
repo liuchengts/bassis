@@ -4,7 +4,8 @@ import com.bassis.data.common.DBConfig;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.string.StringUtils;
 import com.bassis.tools.utils.IDUtils;
-//import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * jdbctools 管理器
  */
 public class JdbcSupervisor {
-//    private static Logger logger = Logger.getLogger(JdbcSupervisor.class);
+    private static Logger logger = LoggerFactory.getLogger(JdbcSupervisor.class);
 
     private static class LazyHolder {
         private static final JdbcSupervisor INSTANCE = new JdbcSupervisor();
