@@ -5,7 +5,7 @@ import com.bassis.boot.common.Declaration;
 import com.bassis.tools.properties.FileProperties;
 import com.bassis.tools.reflex.ReflexUtils;
 import com.bassis.tools.string.StringUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import java.util.Objects;
 
@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 public class AutoConfig {
     private static final long serialVersionUID = 1L;
-    final static Logger logger = Logger.getLogger(AutoConfig.class);
+//    final static Logger logger = Logger.getLogger(AutoConfig.class);
     static FileProperties properties = FileProperties.getInstance();
 
     /**
@@ -27,7 +27,7 @@ public class AutoConfig {
     protected static ApplicationConfig readProperties(Class aClass, ApplicationConfig appApplicationConfig) {
         if (null != aClass) appApplicationConfig.rootClass(aClass);
         String filePath = Objects.requireNonNull(ReflexUtils.getClassLoader().getResource(Declaration.config_file_name)).getFile();
-        logger.debug(filePath);
+//        logger.debug(filePath);
         try {
             //读取配置文件
             properties.read(filePath);
@@ -50,7 +50,7 @@ public class AutoConfig {
             if (!StringUtils.isEmptyString(startSchema)) appApplicationConfig.setStartSchema(startSchema);
 
         } catch (Exception e) {
-            logger.error(Declaration.config_file_name + " 配置无法读取,将由默认配置启动", e);
+//            logger.error(Declaration.config_file_name + " 配置无法读取,将由默认配置启动", e);
         }
         return appApplicationConfig;
     }

@@ -19,14 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.bassis.boot.web.assist.*;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.Reflection;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 /**
  * Servlet 核心容器
  */
 public class BassisServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static Logger logger = Logger.getLogger(BassisServlet.class);
+//    private static Logger logger = Logger.getLogger(BassisServlet.class);
     static ServletConfig servletConfig;
     static ServletContext servletContext;
     final static BeanFactory beanFactory = BeanFactory.getInstance();
@@ -36,7 +36,7 @@ public class BassisServlet extends HttpServlet {
     static Map<String, Method> mapMethods = new ConcurrentHashMap<>();
 
     public void init(ServletConfig config) {
-        logger.debug("初始化 " + this.getClass().getName());
+//        logger.debug("初始化 " + this.getClass().getName());
         servletConfig = config;
         // 获得上下文
         servletContext = config.getServletContext();
@@ -49,7 +49,7 @@ public class BassisServlet extends HttpServlet {
 
     protected void service(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        logger.debug("初始化service资源...");
+//        logger.debug("初始化service资源...");
         try {
             ServletAttribute servletAttribute = ServletAttribute.init(servletContext, request, response);
             ServletResource servletResource = ServletResource.init(servletAttribute);
@@ -82,14 +82,14 @@ public class BassisServlet extends HttpServlet {
             //交由bean进行生产
             Bean bean = beanFactory.createBean(actionCla);
             Object resInvoke = Reflection.invokeMethod(bean.getObject(), method, mapParameters.keySet().toArray());
-            logger.info("resInvoke : " + resInvoke);
+//            logger.info("resInvoke : " + resInvoke);
             //清除资源
             beanFactory.removeBean(bean);
             initView(servletAttribute, servletResource, resInvoke);
         } catch (Exception e) {
             CustomException.throwOut("controller error", e);
         }
-        logger.debug("service方法完成");
+//        logger.debug("service方法完成");
     }
 
     /**
@@ -108,7 +108,7 @@ public class BassisServlet extends HttpServlet {
     }
 
     public void destroy() {
-        logger.debug("资源销毁");
+        //logger.debug("资源销毁");
     }
 
 

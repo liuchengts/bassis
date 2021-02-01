@@ -1,6 +1,6 @@
 package com.bassis.boot.web.filter;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class RootFilter implements Filter {
-    private static Logger logger = Logger.getLogger(RootFilter.class);
+//    private static Logger logger = Logger.getLogger(RootFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -20,7 +20,7 @@ public class RootFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) req;
         HttpServletResponse response = (HttpServletResponse) res;
         String url = request.getRequestURI();
-        logger.debug("访问到了" + url);
+//        logger.debug("访问到了" + url);
         chain.doFilter(request, response);
     }
 

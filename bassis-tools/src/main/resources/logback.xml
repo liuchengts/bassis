@@ -1,10 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="true" scan="true" scanPeriod="30 seconds">
+<configuration debug="false" scan="true" scanPeriod="30 seconds">
+    <!--监听-->
+    <contextListener class="com.bassis.tools.log.LoggerStartupListener"/>
+    <!--日志路径-->
+    <property name="LOGS_DIR" value="${LOGS_DIR}"/>
+    <!--编码格式-->
+    <property name="LOG_CHARSET" value="${LOG_CHARSET}"/>
+    <!--项目名-->
+    <property name="PROJECT" value="${PROJECT}"/>
+    <!--日志路径-->
+    <property name="LOGS_DIR" value="${LOGS_DIR}"/>
+    <!--日志输出等级-->
+    <property name="LOG_LEVEL" value="${LOG_LEVEL}"/>
+    <!--控制台输出格式-->
+    <property name="STDOUT_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss,SSS} [%level] - [%replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''}] - %m%n"/>
+    <!--ERROR 文件输出格式-->
+    <property name="ERROR_OUT_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%caller] - %m%n"/>
+    <!--INFO 文件输出格式-->
+    <property name="INFO_OUT_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''}] - %m%n"/>
+    <!--DEBUG 文件输出格式-->
+    <property name="DEBUG_OUT_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%caller] - %m%n"/>
+    <!--ALL 文件输出格式-->
+    <property name="ALL_OUT_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%caller] - %m%n"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- encoders are  by default assigned the type
-         ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss,SSS} [%level] - [%replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''}] - %m%n</pattern>
+            <pattern>${STDOUT_PATTERN}</pattern>
             <!-- 常用的Pattern变量 -->
             <!--
             <pattern>
@@ -25,22 +48,22 @@
                  Marker: %marker
              </pattern>
              -->
-            <charset>UTF-8</charset>
+            <charset>${LOG_CHARSET}</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
+            <level>${LOG_LEVEL}</level>
         </filter>
     </appender>
 
     <!-- 按日期区分的 ERROR 滚动日志 -->
     <appender name="ERROR-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <!--设置文件输出位置-->
-        <file>logs/error.log</file>
+        <file>${LOGS_DIR}/${PROJECT}/logs/error.log</file>
         <!--设置编码-->
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <!--输出格式-->
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%caller] - %m%n</pattern>
-            <charset>UTF-8</charset>
+            <pattern>${ERROR_OUT_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
         </encoder>
         <!--过滤等级-->
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
@@ -65,10 +88,10 @@
 
     <!-- 按文件大小区分的 INFO 滚动日志 -->
     <appender name="INFO-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/info.log</file>
+        <file>${LOGS_DIR}/${PROJECT}/logs/info.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%replace(%caller{1}){'\t|Caller.{1}0|\r\n', ''}] - %m%n</pattern>
-            <charset>UTF-8</charset>
+            <pattern>${INFO_OUT_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
@@ -86,10 +109,10 @@
 
     <!-- 按日期和大小区分的 DEBUG 滚动日志 -->
     <appender name="DEBUG-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/debug.log</file>
+        <file>${LOGS_DIR}/${PROJECT}/logs/debug.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%caller] - %m%n</pattern>
-            <charset>UTF-8</charset>
+            <pattern>${DEBUG_OUT_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>DEBUG</level>
@@ -105,18 +128,18 @@
     </appender>
 
     <!--  级别的滚动 SUM 滚动日志-->
-    <appender name="SUM-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/sum.log</file>
+    <appender name="ALL-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_DIR}/${PROJECT}/logs/all.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%level] - [%caller] - %m%n</pattern>
-            <charset>UTF-8</charset>
+            <pattern>${ALL_OUT_PATTERN}</pattern>
+            <charset>${LOG_CHARSET}</charset>
         </encoder>
         <!-- deny all events with a level below INFO, that is TRACE and DEBUG -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>DEBUG</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>sum-%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
+            <fileNamePattern>all-%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
@@ -128,6 +151,6 @@
         <appender-ref ref="ERROR-OUT"/>
         <appender-ref ref="INFO-OUT"/>
         <appender-ref ref="DEBUG-OUT"/>
-        <appender-ref ref="SUM-OUT"/>
+        <appender-ref ref="ALL-OUT"/>
     </root>
 </configuration>

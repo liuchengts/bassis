@@ -4,6 +4,7 @@ import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.reflex.ReflexUtils;
 
 import java.io.*;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -73,6 +74,7 @@ public class FileProperties extends Properties {
 
     /**
      * 从指定路径加载信息到Properties,同一个文件中出现相同key的  以最后一个key值为准
+     * 注意：这个过程是通过class resource加载
      *
      * @param path 要读取的文件路径
      */
@@ -89,6 +91,23 @@ public class FileProperties extends Properties {
             CustomException.throwOut("文件读取IO异常", e);
         }
         mapProperties(path);
+    }
+
+    /**
+     * 从指定路径加载信息到Properties,同一个文件中出现相同key的  以最后一个key值为准
+     * 注意： 这个过程是通过文件路径直接加载
+     *
+     * @param url 要读取的文件路径
+     */
+    public synchronized void read(URL url) {
+        try {
+            this.load(new FileInputStream(new File(url.getPath())));
+        } catch (FileNotFoundException e) {
+            CustomException.throwOut("指定文件不存在", e);
+        } catch (IOException e) {
+            CustomException.throwOut("文件读取IO异常", e);
+        }
+        mapProperties(url.getPath());
     }
 
     /**

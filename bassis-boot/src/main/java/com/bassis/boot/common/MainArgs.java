@@ -1,10 +1,10 @@
 package com.bassis.boot.common;
 
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 
 public class MainArgs {
     private static final long serialVersionUID = 1L;
-    static final Logger logger = Logger.getLogger(MainArgs.class);
+//    static final Logger logger = Logger.getLogger(MainArgs.class);
 
     private static class LazyHolder {
         private static final MainArgs INSTANCE = new MainArgs();

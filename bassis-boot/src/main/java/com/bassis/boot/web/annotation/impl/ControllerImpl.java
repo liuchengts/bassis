@@ -9,7 +9,7 @@ import com.bassis.boot.web.annotation.RequestMapping;
 import com.bassis.boot.web.annotation.RequestParam;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.string.StringUtils;
-import org.apache.log4j.Logger;
+//import org.apache.log4j.Logger;
 import org.objectweb.asm.*;
 
 import java.io.IOException;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * 处理 Controller.class RequestMapping.class注解
  */
 public class ControllerImpl {
-    private static Logger logger = Logger.getLogger(ControllerImpl.class);
+//    private static Logger logger = Logger.getLogger(ControllerImpl.class);
 
     private static class LazyHolder {
         private static final ControllerImpl INSTANCE = new ControllerImpl();
@@ -43,7 +43,7 @@ public class ControllerImpl {
 
     // 只处理当前实现类的注解
     static {
-        logger.debug("@Controller分析开始");
+//        logger.debug("@Controller分析开始");
         for (Class<?> clz : Scanner.getInstance().getPackageList()) {
             try {
                 if (clz.isAnnotationPresent(Controller.class)) analyse(clz);
@@ -92,7 +92,7 @@ public class ControllerImpl {
      * @param clz 带有@Controller的类
      */
     private static void analyse(Class<?> clz) {
-        logger.debug(clz.getName());
+//        logger.debug(clz.getName());
         Controller annotation = clz.getAnnotation(Controller.class);
         //处理 Component注解
         Component component = Controller.class.getAnnotation(Component.class);

@@ -26,7 +26,8 @@ public class TestMain {
 
     public static void main(String[] args) throws Exception {
         //启动 BeanFactory
-        beanFactory = BeanFactory.startBeanFactory("com.bassis.bean.test");
+//        beanFactory = BeanFactory.startBeanFactory("com.bassis.bean.test");
+        beanFactory = BeanFactory.startBeanFactory();
         testCreateBean();
 //        testForAutowired();
 //        testAop();

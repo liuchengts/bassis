@@ -7,6 +7,7 @@ import com.bassis.bean.event.ApplicationEventPublisher;
 import com.bassis.bean.event.domain.AutowiredEvent;
 import com.bassis.bean.proxy.ProxyFactory;
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.properties.FileProperties;
 import com.bassis.tools.reflex.Reflection;
 import com.bassis.bean.annotation.impl.ComponentImpl;
 import org.slf4j.Logger;
@@ -26,6 +27,11 @@ public class BeanFactory {
     private static Logger logger = LoggerFactory.getLogger(BeanFactory.class);
     private static final ReentrantLock LOCK = new ReentrantLock();
     private static final Condition STOP = LOCK.newCondition();
+    /**
+     * 初始化读取器
+     */
+    static FileProperties fileProperties = FileProperties.getInstance();
+
 
     private static class LazyHolder {
         private static final BeanFactory INSTANCE = new BeanFactory();
@@ -77,6 +83,15 @@ public class BeanFactory {
         ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
         blockStart();
         return getInstance();
+    }
+
+    /**
+     * 从配置文件启动 BeanFactory
+     *
+     * @return 返回 BeanFactory
+     */
+    public static BeanFactory startBeanFactory() {
+        return startBeanFactory(fileProperties.getProperty("bassis.scan.root"));
     }
 
     /**
@@ -413,4 +428,5 @@ public class BeanFactory {
             LOCK.unlock();
         }
     }
+
 }
