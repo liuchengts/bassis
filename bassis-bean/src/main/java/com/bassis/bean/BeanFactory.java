@@ -81,7 +81,6 @@ public class BeanFactory {
         ApplicationEventPublisher.addListener(autowired);
         //发布资源就绪事件
         ApplicationEventPublisher.publishEvent(new AutowiredEvent(Object.class));
-        blockStart();
         return getInstance();
     }
 
@@ -395,7 +394,7 @@ public class BeanFactory {
     /**
      * 开始阻塞
      */
-    static void blockStart() {
+    public static void blockStart() {
         try {
             LOCK.lock();
             logger.info("beanFactory launch successful");
@@ -413,7 +412,7 @@ public class BeanFactory {
      *
      * @param millis 延迟关闭的毫秒数
      */
-    static void blockStop(long millis) {
+    public static void blockStop(long millis) {
         if (millis <= 0) millis = 100;
         try {
             LOCK.lock();
