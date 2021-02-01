@@ -21,7 +21,7 @@ public class LoggerStartupListener extends ContextAwareBase implements LoggerCon
     static FileProperties fileProperties = FileProperties.getInstance();
     private static final String DEFAULT_PROJECT_NAME = "bassis";
     private static final String DEFAULT_CHARSET = "UTF-8";
-    private static final String DEFAULT_LEVEL = "INFO";
+    private static final String DEFAULT_LEVEL = "DEBUG";
     private static final String DEFAULT_DEFAULT_LOGS_HOME = System.getProperty("user.dir");
     private static final String ROOT_PATH = "/application.properties";
     private boolean started = false;
