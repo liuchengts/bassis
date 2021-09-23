@@ -64,19 +64,22 @@ public class BassisServlet extends HttpServlet {
                 CustomException.throwOut("可变参数:" + servletResource.getPath() + " method:" + method.getName());
             List<Object> parameters = ControllerImpl.getMapParameter(method);
             //请求参数值，参数值类型
-            Map<Object, Object> mapParameters = new LinkedHashMap<>();
-            if (parameters != null) {
-                //验证方法参数
-                int count = parameters.size() / 3;
-                if (count <= 0) count = 1;
-                for (int i = 0; i < count; i = i + 3) {
-                    String name = (String) parameters.get(i);
-                    Class<?> type = (Class<?>) parameters.get(i + 1);
-                    Boolean required = (Boolean) parameters.get(i + 2);
-                    //检查必须参数
-                    if (!servletResource.getParameters().containsKey(name) && required)
-                        CustomException.throwOut("method required parameter : " + name + " is null [" + servletResource.getPath() + "]");
-                    String[] ps = (String[]) servletResource.getParameters().get(name);
+            assert parameters != null;
+            Map<Object, Object> mapParameters = new LinkedHashMap<>(parameters.size());
+            //验证方法参数
+            int count = parameters.size() / 3;
+            if (count <= 0) count = 1;
+            for (int i = 0; i < count; i = i + 3) {
+                String name = (String) parameters.get(i);
+                Class<?> type = (Class<?>) parameters.get(i + 1);
+                Boolean required = (Boolean) parameters.get(i + 2);
+                //检查必须参数
+                if (!servletResource.getParameters().containsKey(name) && required)
+                    CustomException.throwOut("method required parameter : " + name + " is null [" + servletResource.getPath() + "]");
+                String[] ps = (String[]) servletResource.getParameters().get(name);
+                if(null== ps){
+                    mapParameters.put(null, type);
+                }else {
                     mapParameters.put(ps[0], type);
                 }
             }

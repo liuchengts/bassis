@@ -81,7 +81,7 @@ public class ControllerImpl {
      * @return 方法参数名称  方法类型  是否必须
      */
     public static List<Object> getMapParameter(Method key) {
-        if (!parameterMap.containsKey(key)) return null;
+        if (!parameterMap.containsKey(key)) return new ArrayList<>();
         return parameterMap.get(key);
     }
 
