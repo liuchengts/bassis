@@ -1,10 +1,13 @@
 package com.bassis.boot.web.assist;
 
+import com.bassis.boot.common.HttpPage;
 import com.bassis.tools.exception.CustomException;
 import com.bassis.tools.json.GsonUtils;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
@@ -122,13 +125,42 @@ public class ServletView implements Serializable {
         }
     }
 
-
-    /***
-     * 这里需要读取配置将数据放到这里
-     */
-    public static final String error_500 = "error/500.html";// 500地址
-    public static final String error_503 = "error/503.html";// 500地址
-    public static final String error_404 = "error/404.html";// 500地址
     public static final String SUCCESS = "SUCCESS";// 成功
     public static final String ERROR = "ERROR";// 失败
+
+
+    /**
+     * 重定向到指定页面
+     *
+     * @param code 错误码
+     */
+    public void redirect(int code) {
+        switch (code) {
+            case HttpServletResponse.SC_INTERNAL_SERVER_ERROR:
+                this.redirect(HttpPage.ERROR_500);
+                break;
+            case HttpServletResponse.SC_SERVICE_UNAVAILABLE:
+                this.redirect(HttpPage.ERROR_503);
+                break;
+            case HttpServletResponse.SC_NOT_FOUND:
+                this.redirect(HttpPage.ERROR_404);
+                break;
+            default:
+                this.redirect(HttpPage.INDEX);
+                break;
+        }
+    }
+
+    /**
+     * 根据路径重定向
+     *
+     * @param path 路径
+     */
+    public void redirect(String path) {
+        try {
+            this.getResponse().sendRedirect(path);
+        } catch (IOException e) {
+            CustomException.throwOut("response redirect error", e);
+        }
+    }
 }

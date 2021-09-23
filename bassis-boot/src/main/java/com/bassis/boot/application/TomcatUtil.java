@@ -2,11 +2,14 @@ package com.bassis.boot.application;
 
 import com.bassis.boot.common.ApplicationConfig;
 import com.bassis.boot.common.Declaration;
+import com.bassis.boot.common.HttpPage;
 import com.bassis.boot.common.MainArgs;
 import com.bassis.boot.web.BassisServlet;
 import com.bassis.boot.web.filter.CharacterEncodingFilter;
 import com.bassis.boot.web.filter.RootFilter;
 import com.bassis.tools.exception.CustomException;
+import com.bassis.tools.reflex.ReflexUtils;
+import com.bassis.tools.string.StringUtils;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.connector.Connector;
@@ -14,6 +17,7 @@ import org.apache.catalina.core.AprLifecycleListener;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.startup.Tomcat;
+import org.apache.tomcat.util.descriptor.web.ErrorPage;
 import org.apache.tomcat.util.descriptor.web.FilterDef;
 import org.apache.tomcat.util.descriptor.web.FilterMap;
 import org.slf4j.Logger;
@@ -21,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.Filter;
 import javax.servlet.Servlet;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +73,10 @@ public class TomcatUtil {
         context.setPath(appApplicationConfig.getContextPath());
         context.addLifecycleListener(new Tomcat.FixContextListener());
         tomcat.getHost().addChild(context);
+        //设置默认欢迎页
+//        defaultIndexPage(null);
+        //设置错误页面
+//        defaultErrorPage();
         //设置tomcat服务
         StandardServer server = (StandardServer) tomcat.getServer();
         AprLifecycleListener listener = new AprLifecycleListener();
@@ -74,7 +84,7 @@ public class TomcatUtil {
         try {
             defaultConfig(mainArgs.getArgs());
             //启动 tomcat
-            logger.debug("Tomcat start...");
+            logger.info("Tomcat start...");
             tomcat.start();
             logger.info("Tomcat :[" + appApplicationConfig.getServletName() + "] port:[" + appApplicationConfig.getPort() + "] started success");
             logger.info("Tomcat contextPath:[" + appApplicationConfig.getContextPath() + "]");
@@ -173,5 +183,32 @@ public class TomcatUtil {
         context.addFilterMap(filterMap);
     }
 
+    /**
+     * 添加错误页面
+     *
+     * @param errorCode 错误码
+     * @param location  本地页面地址
+     */
+    public void addErrorPage(int errorCode, String location) {
+        ErrorPage errorPage = new ErrorPage();
+        errorPage.setErrorCode(errorCode);
+        errorPage.setLocation(location);
+        context.addErrorPage(errorPage);
+    }
 
+    /**
+     * 配置默认的错误页面
+     */
+    void defaultErrorPage() {
+        addErrorPage(HttpServletResponse.SC_NOT_FOUND, HttpPage.ERROR_404);
+        addErrorPage(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, HttpPage.ERROR_500);
+        addErrorPage(HttpServletResponse.SC_SERVICE_UNAVAILABLE, HttpPage.ERROR_503);
+    }
+
+    /**
+     * 配置默认的欢迎页面
+     */
+    void defaultIndexPage(String location) {
+        context.addWelcomeFile(StringUtils.isEmptyString(location) ? HttpPage.INDEX : location);
+    }
 }

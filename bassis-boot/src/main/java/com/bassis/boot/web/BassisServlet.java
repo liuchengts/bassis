@@ -3,6 +3,7 @@ package com.bassis.boot.web;
 import com.bassis.bean.BeanFactory;
 import com.bassis.bean.common.Bean;
 import com.bassis.bean.event.ApplicationEventPublisher;
+import com.bassis.boot.common.HttpPage;
 import com.bassis.boot.event.ServletEvent;
 import com.bassis.boot.web.annotation.impl.ControllerImpl;
 
@@ -56,12 +57,21 @@ public class BassisServlet extends HttpServlet {
             ServletResource servletResource = ServletResource.init(servletAttribute);
             ServletClient servletClient = ServletClient.init(servletAttribute);
             ServletCookie servletCookie = ServletCookie.init(servletAttribute);
+            ServletView servletView = ServletView.init(servletAttribute, servletResource);
             Class<?> actionCla = ControllerImpl.getMapClass(servletResource.getPath());
             Method method = ControllerImpl.getMapMethod(servletResource.getPath());
-            if (null == actionCla || null == method) CustomException.throwOut("没有找到资源:" + servletResource.getPath());
+            if (HttpPage.ERROR_500.equalsIgnoreCase(servletResource.getPath())
+                    || HttpPage.ERROR_503.equalsIgnoreCase(servletResource.getPath())
+                    || HttpPage.ERROR_404.equalsIgnoreCase(servletResource.getPath())) {
+                servletView.redirect(servletResource.getPath());
+            } else if (null == actionCla || null == method) {
+                CustomException.throwOut("Requested resource not found:{}" + servletResource.getPath());
+            } else {
+                logger.debug("Start processing the request :{}", servletResource.getPath());
+            }
             assert method != null;
             if (method.isVarArgs())
-                CustomException.throwOut("可变参数:" + servletResource.getPath() + " method:" + method.getName());
+                CustomException.throwOut("variable parameter:" + servletResource.getPath() + " method:" + method.getName());
             List<Object> parameters = ControllerImpl.getMapParameter(method);
             //请求参数值，参数值类型
             assert parameters != null;
@@ -77,9 +87,9 @@ public class BassisServlet extends HttpServlet {
                 if (!servletResource.getParameters().containsKey(name) && required)
                     CustomException.throwOut("method required parameter : " + name + " is null [" + servletResource.getPath() + "]");
                 String[] ps = (String[]) servletResource.getParameters().get(name);
-                if(null== ps){
+                if (null == ps) {
                     mapParameters.put(null, type);
-                }else {
+                } else {
                     mapParameters.put(ps[0], type);
                 }
             }
@@ -89,7 +99,7 @@ public class BassisServlet extends HttpServlet {
             logger.info("resInvoke : " + resInvoke);
             //清除资源
             beanFactory.removeBean(bean);
-            initView(servletAttribute, servletResource, resInvoke);
+            defaultView(servletView, resInvoke);
         } catch (Exception e) {
             CustomException.throwOut("controller error", e);
         }
@@ -99,14 +109,11 @@ public class BassisServlet extends HttpServlet {
     /**
      * 配置返回视图
      *
-     * @param servletAttribute
-     * @param servletResource
-     * @param rlt              返回参数
+     * @param rlt 返回参数
      * @throws Exception
      */
-    private static void initView(ServletAttribute servletAttribute, ServletResource servletResource, Object rlt)
+    private static void defaultView(ServletView servletView, Object rlt)
             throws Exception {
-        ServletView servletView = ServletView.init(servletAttribute, servletResource);
         servletView.setRlt(rlt);
         servletView.outJson();
     }

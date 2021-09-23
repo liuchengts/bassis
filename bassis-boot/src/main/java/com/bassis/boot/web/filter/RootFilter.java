@@ -28,7 +28,6 @@ public class RootFilter implements Filter {
 
     @Override
     public void destroy() {
-
     }
 
 }
