@@ -426,6 +426,7 @@ public class BeanFactory {
         } finally {
             LOCK.unlock();
         }
+        System.exit(0);
     }
 
 }
