@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.bassis.tools.exception.CustomException;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
@@ -11,9 +12,33 @@ import com.google.gson.GsonBuilder;
  */
 public class GsonUtils {
     private static final long serialVersionUID = 1L;
-    public static GsonBuilder builder = new GsonBuilder();
-    public static com.google.gson.Gson gson = builder.create();
-    public static String error_str = GsonUtils.class.getName() + "转换异常";
+    static GsonBuilder builder = new GsonBuilder();
+    static com.google.gson.Gson gson = builder.create();
+    static String error_str = GsonUtils.class.getName() + "转换异常";
+
+    public static GsonBuilder getBuilder() {
+        return builder;
+    }
+
+    public static void setBuilder(GsonBuilder builder) {
+        GsonUtils.builder = builder;
+    }
+
+    public static Gson getGson() {
+        return gson;
+    }
+
+    public static void setGson(Gson gson) {
+        GsonUtils.gson = gson;
+    }
+
+    public static String getError_str() {
+        return error_str;
+    }
+
+    public static void setError_str(String error_str) {
+        GsonUtils.error_str = error_str;
+    }
 
     /**
      * json字符串转换为对象
@@ -34,7 +59,7 @@ public class GsonUtils {
     /**
      * json字符串转换为对象
      *
-     * @param json json字符串
+     * @param json    json字符串
      * @param typeOfT 对象类型  通常是一个 new TypeToken<List<CLASS>>(){}.getType()
      * @return 返回对象
      */
