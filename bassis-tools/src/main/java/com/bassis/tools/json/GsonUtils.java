@@ -1,5 +1,6 @@
 package com.bassis.tools.json;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import com.bassis.tools.exception.CustomException;
@@ -10,9 +11,9 @@ import com.google.gson.GsonBuilder;
  */
 public class GsonUtils {
     private static final long serialVersionUID = 1L;
-    static GsonBuilder builder = new GsonBuilder();
-    static com.google.gson.Gson gson = builder.create();
-    static String error_str = GsonUtils.class.getName() + "转换异常";
+    public static GsonBuilder builder = new GsonBuilder();
+    public static com.google.gson.Gson gson = builder.create();
+    public static String error_str = GsonUtils.class.getName() + "转换异常";
 
     /**
      * json字符串转换为对象
@@ -24,6 +25,22 @@ public class GsonUtils {
     public static Object jsonToObject(String json, Class<?> type) {
         try {
             return gson.fromJson(json, type);
+        } catch (Exception e) {
+            CustomException.throwOut(error_str, e);
+            return null;
+        }
+    }
+
+    /**
+     * json字符串转换为对象
+     *
+     * @param json json字符串
+     * @param typeOfT 对象类型  通常是一个 new TypeToken<List<CLASS>>(){}.getType()
+     * @return 返回对象
+     */
+    public static Object jsonToObject(String json, Type typeOfT) {
+        try {
+            return gson.fromJson(json, typeOfT);
         } catch (Exception e) {
             CustomException.throwOut(error_str, e);
             return null;
