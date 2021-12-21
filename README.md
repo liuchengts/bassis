@@ -1,5 +1,6 @@
 bassis
 ---------------------------
+### 出于更好的开发此项目的目的，项目已迁移至 [ayouran/bassis](https://github.com/ayouran/bassis)，当前地址会随时废弃
 
 ### 目的在于开发出类似springboot使用方式的框架，同时加入其它特性，使其原生支持分布式，借此窥探java语言特性、jvm、spring实现方式，使技术广度和深度得到提升，对后续阅读理解spring、hibernate等开源框架有一个强大的基础，对jvm有一定的认知能力。
 
