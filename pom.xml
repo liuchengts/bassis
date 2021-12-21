@@ -20,7 +20,7 @@
         <hibernate.version>5.2.10.Final</hibernate.version>
         <mysql.version>5.1.40</mysql.version>
         <servlet-api.version>4.0.0</servlet-api.version>
-        <tomcat.version>8.5.45</tomcat.version>
+        <tomcat.version>8.5.61</tomcat.version>
         <bassis-tools.version>0.0.1-SNAPSHOT</bassis-tools.version>
         <bassis-bean.version>0.0.1-SNAPSHOT</bassis-bean.version>
         <bassis-data.version>0.0.1-SNAPSHOT</bassis-data.version>
